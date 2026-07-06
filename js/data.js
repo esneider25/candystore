@@ -279,14 +279,7 @@ let BANNERS = [
 
 window.DATA_LOADED = false;
 
-function initFirebaseData() {
-  if (typeof firebase === 'undefined') {
-    console.warn('Firebase SDK not loaded yet.');
-    setTimeout(initFirebaseData, 100);
-    return;
-  }
-
-  const db = firebase.database();
+function initOfflineData() {
 
   // Offline Mode - CandyStore specific mock data
   CATEGORIES = [

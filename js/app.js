@@ -2007,7 +2007,7 @@ let currentUser = null;
 let userProfile = null;
 
 function initPublicAuth() {
-  if (!firebase || !firebase.auth) return;
+  if (typeof firebase === 'undefined' || !firebase.auth) return;
   
   firebase.auth().onAuthStateChanged(async (user) => {
     currentUser = user;
