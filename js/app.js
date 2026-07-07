@@ -687,6 +687,16 @@ async function _submitOrderLogic() {
   }
   
   let finalUsd = pkg.priceUsd;
+  
+  let customerPaymentDetails = {};
+  if (method && method.fields) {
+    method.fields.forEach(f => {
+      const fieldInput = document.getElementById(`payment-field-${f}`);
+      if (fieldInput && fieldInput.value.trim()) {
+        customerPaymentDetails[f] = fieldInput.value.trim();
+      }
+    });
+  }
 
   if (typeof userProfile !== 'undefined' && userProfile && userProfile.role === 'revendedor' && userProfile.discountPercentage > 0 && product.id !== 'wallet-recharge') {
     if (pkg.costUsd && pkg.costUsd > 0) {
@@ -806,6 +816,7 @@ async function _submitOrderLogic() {
       costUsd: pkg.costUsd || 0,
       paymentMethodId: method.id,
       paymentMethodName: method.name,
+      customerPaymentDetails: customerPaymentDetails,
       paymentCurrency: method.currency || 'bs',
       customerContact: finalContact,
       gameId: singleGameId,
@@ -1801,7 +1812,8 @@ async function triggerTelegramNotification(order) {
       discountType: order.discountType,
       ocrNumbers: order.ocrNumbers,
       paymentMethodName: order.paymentMethodName,
-      customerContact: order.customerContact
+      customerContact: order.customerContact,
+      customerPaymentDetails: order.customerPaymentDetails
     },
     screenshotBase64: screenshotBase64,
     siteOrigin: window.location.origin,

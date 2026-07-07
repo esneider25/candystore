@@ -2692,6 +2692,15 @@ function openOrderDetailModal(orderId) {
           <span class="label">Método de Pago</span>
           <span class="value">${order.paymentMethodName}</span>
         </div>
+        ${order.customerPaymentDetails ? Object.entries(order.customerPaymentDetails).map(([k, v]) => `
+          <div class="admin-detail-row" style="background: rgba(14, 165, 233, 0.05);">
+            <span class="label" style="color: #0ea5e9; text-transform: capitalize;">${k === 'nota' ? 'Referencia/Nota' : k === 'binanceId' ? 'Binance ID' : k}</span>
+            <span class="value">
+              <strong>${v}</strong>
+              <button class="copy-btn" onclick="adminCopyText('${v}')" title="Copiar">📋</button>
+            </span>
+          </div>
+        `).join('') : ''}
         ${typeSpecificHtml}
         <div class="admin-detail-row">
           <span class="label">Fecha</span>
@@ -2798,9 +2807,10 @@ function exportOrders() {
     return;
   }
 
-  let csv = 'Referencia,Producto,Paquete,Tipo,Precio USD,Precio Bs,Método de Pago,Contacto,Game ID,Email,Estado,Fecha\n';
+  let csv = 'Referencia,Producto,Paquete,Tipo,Precio USD,Precio Bs,Método de Pago,Detalles de Pago,Contacto,Game ID,Email,Estado,Fecha\n';
   orders.forEach(o => {
-    csv += `${o.id},"${o.productName}","${o.packageLabel}",${o.productType || 'game-id'},${o.priceUsd},${o.priceBs},"${o.paymentMethodName}","${o.customerContact || ''}","${o.gameId || ''}","${o.accountEmail || ''}",${o.status},${o.createdAt}\n`;
+    const paymentDetailsStr = o.customerPaymentDetails ? Object.entries(o.customerPaymentDetails).map(([k,v]) => `${k}:${v}`).join(' | ') : '';
+    csv += `${o.id},"${o.productName}","${o.packageLabel}",${o.productType || 'game-id'},${o.priceUsd},${o.priceBs},"${o.paymentMethodName}","${paymentDetailsStr}","${o.customerContact || ''}","${o.gameId || ''}","${o.accountEmail || ''}",${o.status},${o.createdAt}\n`;
   });
 
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

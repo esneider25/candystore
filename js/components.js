@@ -540,6 +540,27 @@ function renderPaymentDetails(methodId) {
       </span>
     </div>
   `).join('');
+
+  let inputsHtml = '';
+  if (method.fields && method.fields.length > 0) {
+    inputsHtml = '<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px;">';
+    inputsHtml += '<div style="font-size: 0.9rem; color: #9ca3af; margin-bottom: 5px;">Por favor completa los siguientes datos:</div>';
+    method.fields.forEach(f => {
+      let label = f;
+      if (f === 'nota') label = 'Nota / Mensaje del pago';
+      else if (f === 'referencia') label = 'Número de Referencia';
+      else if (f === 'binanceId') label = 'Tu Binance Pay ID';
+      else if (f === 'email') label = 'Correo asociado al pago';
+      
+      inputsHtml += `
+        <div class="mockup-input-group">
+          <input type="text" id="payment-field-${f}" class="mockup-input payment-dynamic-field" data-field="${f}" placeholder="${label}" autocomplete="off">
+        </div>
+      `;
+    });
+    inputsHtml += '</div>';
+  }
+
   return `
     <div class="fade-in-up" style="background-color: #111827; border: 1px solid #374151; border-radius: 8px; padding: 20px; margin-top: 16px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
       <h4 style="font-size: 1.1rem; color: #0ea5e9; margin-bottom: 15px; border-bottom: 1px solid #374151; padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
@@ -548,6 +569,7 @@ function renderPaymentDetails(methodId) {
       <div style="display:flex; flex-direction:column; gap:10px;">
         ${rows}
       </div>
+      ${inputsHtml}
     </div>
   `;
 }
