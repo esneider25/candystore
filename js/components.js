@@ -517,18 +517,22 @@ function renderPaymentDetails(methodId) {
   const method = PAYMENT_METHODS.find(m => m.id === methodId);
   if (!method) return '';
   const rows = Object.entries(method.details).map(([key, val]) => `
-    <div class="payment-detail-row">
-      <span class="label">${formatDetailLabel(key)}</span>
-      <span class="value">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
+      <span style="color: #9ca3af; font-size: 0.9rem;">${formatDetailLabel(key)}</span>
+      <span style="color: #fff; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
         ${val}
-        <button class="copy-btn" onclick="copyToClipboard('${val}')" title="Copiar">📋</button>
+        <button onclick="copyToClipboard('${val}')" title="Copiar" style="background: rgba(14, 165, 233, 0.2); border: 1px solid #0ea5e9; color: #0ea5e9; cursor: pointer; font-size: 1rem; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;">Copiar</button>
       </span>
     </div>
   `).join('');
   return `
-    <div class="payment-details-box fade-in-up">
-      <h4>${method.icon} Datos de ${method.name}</h4>
-      ${rows}
+    <div class="fade-in-up" style="background-color: #111827; border: 1px solid #374151; border-radius: 8px; padding: 20px; margin-top: 16px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+      <h4 style="font-size: 1.1rem; color: #0ea5e9; margin-bottom: 15px; border-bottom: 1px solid #374151; padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+        <span>${method.icon}</span> Datos de ${method.name}
+      </h4>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        ${rows}
+      </div>
     </div>
   `;
 }
@@ -568,14 +572,14 @@ function renderOrderSummary(product, pkg, method, discount = null) {
 
     if (displayCurrency === 'usd') {
       discountHtml = `
-        <div class="order-summary-row" style="color: var(--primary);">
+        <div style="display: flex; justify-content: space-between; font-size: 0.95rem; margin-bottom: 5px; color: #10b981;">
           <span>Cupón (${discount.code})</span>
           <span>-$${discountAmount.toFixed(2)} USD</span>
         </div>
       `;
     } else {
       discountHtml = `
-        <div class="order-summary-row" style="color: var(--primary);">
+        <div style="display: flex; justify-content: space-between; font-size: 0.95rem; margin-bottom: 5px; color: #10b981;">
           <span>Cupón (${discount.code})</span>
           <span>- Bs. ${formatBs(usdToBs(discountAmount))}</span>
         </div>
@@ -590,26 +594,26 @@ function renderOrderSummary(product, pkg, method, discount = null) {
 
   if (displayCurrency === 'usd') {
     basePriceHtml = `
-      <div class="order-summary-row">
-        <span>Precio base</span>
-        <span>$${originalPriceUsd.toFixed(2)} USD</span>
+      <div style="display: flex; justify-content: space-between; font-size: 0.95rem; margin-bottom: 5px;">
+        <span style="color: #9ca3af;">Precio base</span>
+        <span style="color: #fff;">$${originalPriceUsd.toFixed(2)} USD</span>
       </div>
     `;
     totalHtml = `
-      <div class="order-summary-row total" style="color: #0ea5e9;">
+      <div style="display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: bold; color: #0ea5e9; margin-top: 5px;">
         <span>Total a pagar (USD)</span>
         <span>$${finalUsd.toFixed(2)} USD</span>
       </div>
     `;
   } else {
     basePriceHtml = `
-      <div class="order-summary-row">
-        <span>Precio base</span>
-        <span>Bs. ${formatBs(usdToBs(originalPriceUsd))}</span>
+      <div style="display: flex; justify-content: space-between; font-size: 0.95rem; margin-bottom: 5px;">
+        <span style="color: #9ca3af;">Precio base</span>
+        <span style="color: #fff;">Bs. ${formatBs(usdToBs(originalPriceUsd))}</span>
       </div>
     `;
     totalHtml = `
-      <div class="order-summary-row total">
+      <div style="display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: bold; color: #0ea5e9; margin-top: 5px;">
         <span>Total a pagar (Bs.)</span>
         <span>Bs. ${formatBs(bs)}</span>
       </div>
@@ -617,22 +621,26 @@ function renderOrderSummary(product, pkg, method, discount = null) {
   }
 
   return `
-    <h4>Resumen del pedido</h4>
-    <div class="order-summary-row">
-      <span>Producto</span>
-      <span>${product.name}</span>
+    <h4 style="font-size: 1.1rem; color: #fff; margin-bottom: 15px; border-bottom: 1px solid #374151; padding-bottom: 10px;">Resumen del pedido</h4>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div style="display: flex; justify-content: space-between; font-size: 0.95rem;">
+        <span style="color: #9ca3af;">Producto</span>
+        <span style="color: #fff; font-weight: 500;">${product.name}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.95rem;">
+        <span style="color: #9ca3af;">Paquete</span>
+        <span style="color: #fff; font-weight: 500;">${pkg.label}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.95rem;">
+        <span style="color: #9ca3af;">Método de pago</span>
+        <span style="color: #fff; font-weight: 500;">${method.name}</span>
+      </div>
+      <div style="margin-top: 5px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">
+        ${basePriceHtml}
+        ${discountHtml}
+        ${totalHtml}
+      </div>
     </div>
-    <div class="order-summary-row">
-      <span>Paquete</span>
-      <span>${pkg.label}</span>
-    </div>
-    <div class="order-summary-row">
-      <span>Método de pago</span>
-      <span>${method.name}</span>
-    </div>
-    ${basePriceHtml}
-    ${discountHtml}
-    ${totalHtml}
   `;
 }
 

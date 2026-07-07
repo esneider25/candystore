@@ -455,10 +455,13 @@ function selectPayment(methodId) {
   const screenshotGroup = document.getElementById('screenshot-group');
   
   if (methodId === 'wallet') {
-    if (container) container.innerHTML = `<div class="payment-details-card" style="border-color: #0ea5e9;">
-      <h4>?? Pago con Monedero</h4>
-      <p>El monto será descontado automáticamente de tu saldo actual.</p>
-    </div>`;
+    if (container) container.innerHTML = `
+      <div class="fade-in-up" style="background-color: #111827; border: 1px solid #374151; border-radius: 8px; padding: 20px; margin-top: 16px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+        <h4 style="font-size: 1.1rem; color: #0ea5e9; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          <span>💳</span> Pago con Monedero
+        </h4>
+        <p style="color: #9ca3af; font-size: 0.95rem; margin: 0;">El monto será descontado automáticamente de tu saldo actual.</p>
+      </div>`;
     if (screenshotGroup) screenshotGroup.style.display = 'none';
   } else {
     if (container) container.innerHTML = renderPaymentDetails(methodId);
