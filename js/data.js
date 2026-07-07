@@ -343,8 +343,64 @@ function initOfflineData() {
 
 initOfflineData();
 
+function initFirebaseDataSync() {
+  if (typeof firebase === 'undefined' || !firebase.database) return;
+  const db = firebase.database();
+  
+  db.ref('payment_methods').on('value', snap => {
+    if (snap.exists()) {
+      PAYMENT_METHODS = snap.val();
+      if (typeof renderApp === 'function') renderApp();
+      if (typeof renderActiveTab === 'function' && adminState && adminState.currentTab === 'settings') renderActiveTab();
+    }
+  });
+
+  db.ref('settings').on('value', snap => {
+    if (snap.exists()) {
+      SITE_SETTINGS = snap.val();
+      if (typeof renderApp === 'function') renderApp();
+    }
+  });
+
+  db.ref('landing_config').on('value', snap => {
+    if (snap.exists()) {
+      LANDING_CONFIG = snap.val();
+      if (typeof renderApp === 'function') renderApp();
+    }
+  });
+
+  db.ref('discounts').on('value', snap => {
+    if (snap.exists()) {
+      DISCOUNT_CODES = snap.val();
+    }
+  });
+
+  db.ref('products').on('value', snap => {
+    if (snap.exists()) {
+      PRODUCTS = snap.val();
+      PRODUCTS.forEach(p => { if (!p.type) p.type = PRODUCT_TYPE_MAP[p.id] || 'game-id'; });
+      if (typeof renderApp === 'function') renderApp();
+      if (typeof renderActiveTab === 'function' && adminState && adminState.currentTab === 'products') renderActiveTab();
+    }
+  });
+
+  db.ref('categories').on('value', snap => {
+    if (snap.exists()) {
+      CATEGORIES = snap.val();
+      if (typeof renderApp === 'function') renderApp();
+      if (typeof renderActiveTab === 'function' && adminState && adminState.currentTab === 'categories') renderActiveTab();
+    }
+  });
+}
+initFirebaseDataSync();
+
 function saveToDb(path, data) {
-  console.log('Offline Mode: Simulated save to ' + path, data);
+  if (typeof firebase !== 'undefined' && firebase.database) {
+    firebase.database().ref(path).set(data)
+      .catch(err => console.error("Firebase write error for path " + path + ":", err));
+  } else {
+    console.log('Offline Mode: Simulated save to ' + path, data);
+  }
 }
 
 // ── Product Types (applied after localStorage load) ──

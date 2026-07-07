@@ -29,7 +29,21 @@
   <div id="app"></div>
 
   <!-- Scripts (order matters: data → components → app) -->
-  <!-- Firebase SDK Removed for Offline Mode -->
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB1p4V34kF1lkK1GRgyAu8rtI5Na5ZLU7E",
+      authDomain: "candystore-eea7d.firebaseapp.com",
+      projectId: "candystore-eea7d",
+      storageBucket: "candystore-eea7d.firebasestorage.app",
+      messagingSenderId: "489812589860",
+      appId: "1:489812589860:web:fd904d00e4555ff68e87b1"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="js/data.js?v=6"></script>
   <script src="js/components.js?v=6"></script>
