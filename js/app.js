@@ -589,10 +589,24 @@ async function _submitOrderLogic() {
 
   // Validate contact
   const contactInput = document.getElementById('customer-contact');
-  if (!contactInput || !contactInput.value.trim()) {
-    showToast('?? Ingresa tu teléfono o correo de contacto');
-    contactInput?.focus();
-    return;
+  const phoneInput = document.getElementById('customer-phone');
+  const emailInput = document.getElementById('customer-email');
+  
+  let finalContact = '';
+  if (contactInput && contactInput.value.trim()) {
+    finalContact = contactInput.value.trim();
+  } else {
+    if (!phoneInput || !phoneInput.value.trim()) {
+      showToast('⚠️ Ingresa tu WhatsApp o Teléfono');
+      phoneInput?.focus();
+      return;
+    }
+    if (!emailInput || !emailInput.value.trim()) {
+      showToast('⚠️ Ingresa tu Correo Electrónico');
+      emailInput?.focus();
+      return;
+    }
+    finalContact = `${phoneInput.value.trim()} | ${emailInput.value.trim()}`;
   }
   let numberOfOrders = 1;
 
@@ -685,7 +699,7 @@ async function _submitOrderLogic() {
   let discountType = null;
 
   if (appState.appliedDiscount) {
-    const validDiscount = validateDiscount(appState.appliedDiscount.code, contactInput.value.trim());
+    const validDiscount = validateDiscount(appState.appliedDiscount.code, finalContact);
     if (!validDiscount) {
       showToast('?? El cupón ya no es válido, expiró o alcanzó su límite de uso.');
       return;
@@ -790,7 +804,7 @@ async function _submitOrderLogic() {
       paymentMethodId: method.id,
       paymentMethodName: method.name,
       paymentCurrency: method.currency || 'bs',
-      customerContact: contactInput.value.trim(),
+      customerContact: finalContact,
       gameId: singleGameId,
       accountEmail: accountEmail,
       accountPassword: accountPassword,
@@ -1859,10 +1873,17 @@ setInterval(() => {
 window.verifyGameId = async function(productId) {
   appState.verifiedPlayerName = null;
   const product = PRODUCTS.find(p => p.id === productId);
-  if (!product || !product.apiVerifierProvider) return;
+  if (!product) return;
 
   const resultDiv = document.getElementById('verify-result');
   const btnVerify = document.getElementById('btn-verify-id');
+
+  if (!product.apiVerifierProvider) {
+    if (resultDiv) {
+      resultDiv.innerHTML = '<span style="color: #facc15;">ℹ️ La verificación automática no está disponible para este juego. Verifica tu ID manualmente.</span>';
+    }
+    return;
+  }
 
   if (typeof API_CONFIGS === 'undefined' || API_CONFIGS.length === 0) {
     resultDiv.innerHTML = '<span style="color: #ff5252;">? Error interno: Verificador inaccesible (Problema de permisos o sesión). Contacta a soporte.</span>';

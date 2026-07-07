@@ -93,14 +93,11 @@ function renderMockupDashboard() {
 
     // Inputs based on type (with correct IDs for submitOrder)
     let inputsHtml = '';
-    let verifierHtml = '';
-    if (selectedProduct.apiVerifierProvider) {
-      verifierHtml = `
-        <button type="button" class="mockup-btn" onclick="verifyGameId('${selectedProduct.id}')" id="btn-verify-id" style="margin-left: 10px; padding:0 16px; min-width:120px;">
-          Verificar
-        </button>
-      `;
-    }
+    let verifierHtml = `
+      <button type="button" class="mockup-btn" onclick="verifyGameId('${selectedProduct.id}')" id="btn-verify-id" style="margin-left: 10px; padding:0 16px; min-width:110px; display:flex; align-items:center; justify-content:center; gap:5px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg> Verificar
+      </button>
+    `;
 
     if (productType === 'game-id') {
       inputsHtml = `
@@ -188,8 +185,13 @@ function renderMockupDashboard() {
               ✅ Sesión iniciada como: ${currentUser.email || currentUser.displayName}
             </div>
           ` : `
-          <div class="mockup-input-group">
-            <input type="text" id="customer-contact" placeholder="Teléfono o correo de contacto" class="mockup-input" autocomplete="off">
+          <div style="display:flex; gap:10px; width:100%;">
+            <div class="mockup-input-group" style="flex:1;">
+              <input type="text" id="customer-phone" placeholder="WhatsApp / Teléfono" class="mockup-input" autocomplete="off">
+            </div>
+            <div class="mockup-input-group" style="flex:1;">
+              <input type="email" id="customer-email" placeholder="Correo Electrónico" class="mockup-input" autocomplete="off">
+            </div>
           </div>
           <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 6px;">Te contactaremos para notificarte sobre tu pedido</div>
           `}
