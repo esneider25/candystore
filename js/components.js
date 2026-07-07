@@ -91,22 +91,60 @@ function renderMockupDashboard() {
       }).join('');
     }
 
-    // Inputs based on type
+    // Inputs based on type (with correct IDs for submitOrder)
     let inputsHtml = '';
+    let verifierHtml = '';
+    if (selectedProduct.apiVerifierProvider) {
+      verifierHtml = `
+        <button type="button" class="mockup-btn" onclick="verifyGameId('${selectedProduct.id}')" id="btn-verify-id" style="margin-left: 10px; padding:0 16px; min-width:120px;">
+          Verificar
+        </button>
+      `;
+    }
+
     if (productType === 'game-id') {
       inputsHtml = `
-        <div class="mockup-input-group">
-          <input type="text" placeholder="Ej. 1234567890" class="mockup-input">
-          <button style="background-color:#374151; padding:0 16px; border-radius:4px; color:white; border:none; cursor:pointer;">?</button>
+        <div style="display:flex; gap:10px; width:100%; align-items: stretch;">
+          <div class="mockup-input-group" style="flex:1;">
+            <input type="text" id="game-uid" placeholder="Ej. 1234567890" class="mockup-input" autocomplete="off">
+          </div>
+          ${verifierHtml}
         </div>
+        <div id="verify-result" style="width:100%; margin-top: 8px; font-weight: bold; font-size: 0.95rem; color: #00d2ff; text-align: left;"></div>
       `;
-    } else {
+    } else if (productType === 'game-id-zone') {
       inputsHtml = `
+        <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
+          <div style="display:flex; gap:10px; width:100%; align-items: stretch;">
+            <div class="mockup-input-group" style="flex:2;">
+              <input type="text" id="game-uid" placeholder="Player ID" class="mockup-input" autocomplete="off">
+            </div>
+            <div class="mockup-input-group" style="flex:1;">
+              <input type="text" id="game-zone" placeholder="Zone ID" class="mockup-input" autocomplete="off">
+            </div>
+          </div>
+          ${verifierHtml ? `<div style="width:100%; display:flex;">${verifierHtml}</div>` : ''}
+        </div>
+        <div id="verify-result" style="width:100%; margin-top: 8px; font-weight: bold; font-size: 0.95rem; color: #00d2ff; text-align: left;"></div>
+      `;
+    } else if (productType === 'account') {
+       inputsHtml = `
+        <div class="mockup-input-group" style="margin-bottom: 10px;">
+          <input type="text" id="account-email" placeholder="Correo o usuario de la cuenta" class="mockup-input" autocomplete="off">
+        </div>
         <div class="mockup-input-group">
-          <input type="text" placeholder="Correo Electrónico / Número" class="mockup-input">
+          <input type="password" id="account-password" placeholder="Contraseña de la cuenta" class="mockup-input" autocomplete="off">
         </div>
       `;
     }
+
+    // Payment Methods HTML
+    const paymentMethodsHtml = PAYMENT_METHODS.map(pm => `
+      <div class="mockup-payment-option" onclick="selectPayment('${pm.id}')" id="pay-${pm.id}">
+        <div class="mockup-payment-icon">${pm.icon || '💸'}</div>
+        <div class="mockup-payment-name">${pm.name}</div>
+      </div>
+    `).join('');
 
     purchaseAreaHtml = `
       <!-- Área de Compra Simulada -->
@@ -120,26 +158,90 @@ function renderMockupDashboard() {
         </div>
 
         <!-- Paso 1: ID -->
+        ${inputsHtml ? `
         <div style="margin-bottom: 32px;">
           <h3 class="mockup-step-title">
             <span class="mockup-step-number">1</span> Ingresa tus Datos
           </h3>
           ${inputsHtml}
         </div>
+        ` : ''}
 
         <!-- Paso 2: Paquetes -->
         <div style="margin-bottom: 32px;">
           <h3 class="mockup-step-title">
-            <span class="mockup-step-number">2</span> Selecciona el monto
+            <span class="mockup-step-number">${inputsHtml ? '2' : '1'}</span> Selecciona el monto
           </h3>
           <div class="mockup-packages-grid">
             ${packagesHtml}
           </div>
         </div>
 
-        <!-- Botón de Pago -->
-        <button class="mockup-btn-large" onclick="if(appState.selectedPackageIndex !== null) { appState.selectedProductId = '${selectedProduct.id}'; showPaymentFlow(); } else { showToast('⚠️ Selecciona un paquete primero'); }">
-          Proceder al Pago
+        <!-- Paso 3: Contacto -->
+        <div style="margin-bottom: 32px;">
+          <h3 class="mockup-step-title">
+            <span class="mockup-step-number">${inputsHtml ? '3' : '2'}</span> Datos de Contacto
+          </h3>
+          ${(typeof currentUser !== 'undefined' && currentUser) ? `
+            <input type="hidden" id="customer-contact" value="${currentUser.email || currentUser.displayName || ''}">
+            <div style="color: #4ade80; font-size: 0.9rem; padding: 10px; background: rgba(74, 222, 128, 0.1); border-radius: 8px;">
+              ✅ Sesión iniciada como: ${currentUser.email || currentUser.displayName}
+            </div>
+          ` : `
+          <div class="mockup-input-group">
+            <input type="text" id="customer-contact" placeholder="Teléfono o correo de contacto" class="mockup-input" autocomplete="off">
+          </div>
+          <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 6px;">Te contactaremos para notificarte sobre tu pedido</div>
+          `}
+        </div>
+
+        <!-- Paso 4: Descuento -->
+        <div style="margin-bottom: 32px;">
+          <h3 class="mockup-step-title">
+            <span class="mockup-step-number">${inputsHtml ? '4' : '3'}</span> Código de Descuento
+          </h3>
+          <div style="display:flex; gap:10px; width:100%; align-items: stretch;">
+            <div class="mockup-input-group" style="flex:1;">
+              <input type="text" id="discount-input" placeholder="INGRESA TU CÓDIGO" class="mockup-input" style="text-transform: uppercase;" autocomplete="off">
+            </div>
+            <button type="button" class="mockup-btn" onclick="applyDiscount()" style="padding:0 20px; min-width:100px;">
+              Aplicar
+            </button>
+          </div>
+        </div>
+
+        <!-- Paso 5: Método de Pago -->
+        <div style="margin-bottom: 32px;">
+          <h3 class="mockup-step-title">
+            <span class="mockup-step-number">${inputsHtml ? '5' : '4'}</span> Método de Pago
+          </h3>
+          <div class="mockup-payment-grid" id="payment-methods">
+            ${paymentMethodsHtml}
+          </div>
+        </div>
+
+        <!-- Screenshot (Hidden by default, shown based on payment selection in app.js) -->
+        <div id="payment-details-container"></div>
+        <div class="order-summary" id="order-summary" style="margin-top: 20px; margin-bottom: 20px; display:none; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px;"></div>
+        <div id="screenshot-group" style="display:none; margin-bottom: 32px;">
+          <h3 class="mockup-step-title">
+            <span class="mockup-step-number">📸</span> Comprobante
+          </h3>
+          <div class="screenshot-upload" id="screenshot-upload" onclick="document.getElementById('payment-screenshot').click()">
+            <input type="file" id="payment-screenshot" accept="image/*" style="display:none;" onchange="previewScreenshot(this)">
+            <div class="screenshot-preview" id="screenshot-preview">
+              <div class="screenshot-placeholder">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                <span>Toca para subir captura</span>
+                <span class="screenshot-hint">JPG, PNG — Máx 5MB</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón de Confirmación -->
+        <button class="mockup-btn-large" id="btn-submit" onclick="if(appState.selectedPackageIndex !== null) { appState.selectedProductId = '${selectedProduct.id}'; submitOrder(); } else { showToast('⚠️ Selecciona un paquete primero'); }">
+          CONFIRMAR PEDIDO
         </button>
       </section>
     `;

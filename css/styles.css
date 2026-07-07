@@ -1852,6 +1852,45 @@ body {
 }
 @media (max-width: 768px) { .mockup-packages-grid { grid-template-columns: repeat(2, 1fr); } }
 
+.mockup-payment-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (max-width: 768px) { .mockup-payment-grid { grid-template-columns: 1fr; } }
+
+.mockup-payment-option {
+  background-color: #111827;
+  border: 1px solid #374151;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.mockup-payment-option:hover {
+  border-color: #0ea5e9;
+  background-color: #1f2937;
+}
+.mockup-payment-option.selected {
+  border-color: #0ea5e9;
+  background-color: #1f2937;
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.2);
+}
+.mockup-payment-icon {
+  font-size: 2rem;
+}
+.mockup-payment-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+}
+
 .mockup-package {
   background-color: #111827;
   border: 1px solid #374151;

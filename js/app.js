@@ -448,7 +448,7 @@ function showPaymentFlow() {
 
 function selectPayment(methodId) {
   appState.selectedPaymentId = methodId;
-  document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+  document.querySelectorAll('.payment-option, .mockup-payment-option').forEach(opt => opt.classList.remove('selected'));
   const selected = document.getElementById(`pay-${methodId}`);
   if (selected) selected.classList.add('selected');
   const container = document.getElementById('payment-details-container');
