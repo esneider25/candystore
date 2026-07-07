@@ -1954,3 +1954,31 @@ body {
 .mockup-btn-large:hover {
   background-color: #ec4899;
 }
+
+/* Mobile Optimizations for Mockup Dashboard */
+@media (max-width: 768px) {
+  .mockup-main { padding: 16px 10px; }
+  .mockup-banner { height: 180px; margin-bottom: 24px; }
+  .mockup-banner-content { padding-left: 20px; padding-right: 20px; }
+  .mockup-banner-title { font-size: 1.8rem; margin-top: 4px; margin-bottom: 8px; }
+  .mockup-btn { padding: 6px 16px; font-size: 0.9rem; }
+  .mockup-grid { gap: 10px; margin-bottom: 24px; }
+  .mockup-card-img-container { height: 90px; }
+  .mockup-card-emoji { font-size: 1.8rem; }
+  .mockup-card-body { padding: 8px; }
+  .mockup-card-title { font-size: 0.8rem; }
+  .mockup-card-subtitle { font-size: 0.65rem; }
+  .mockup-purchase-area { padding: 16px; border-radius: 8px; }
+  .mockup-purchase-header h2 { font-size: 1.2rem; }
+  .mockup-purchase-header img { width: 36px; height: 36px; }
+  .mockup-step-title { font-size: 1rem; margin-bottom: 10px; }
+  .mockup-step-number { width: 20px; height: 20px; font-size: 0.75rem; }
+  .mockup-packages-grid { gap: 8px; }
+  .mockup-package { padding: 10px; }
+  .mockup-package-amount { font-size: 1rem; }
+  .mockup-package-price { font-size: 0.75rem; }
+  .mockup-package-bonus { font-size: 0.65rem; padding: 0 6px; top: -6px; }
+  .mockup-btn-large { padding: 12px; font-size: 1rem; }
+  .mockup-payment-icon { font-size: 1.6rem; }
+  .mockup-payment-name { font-size: 0.85rem; }
+}
