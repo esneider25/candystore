@@ -427,6 +427,18 @@ function selectWalletAmount(amount, index) {
 }
 
 // -- Payment Selection --
+function showPaymentFlow() {
+  const pkgIndex = appState.selectedPackageIndex;
+  const productId = appState.selectedProductId;
+  if (pkgIndex === null || !productId) return;
+  
+  navigateTo('product', productId);
+  
+  setTimeout(() => {
+    selectPackage(productId, pkgIndex);
+  }, 100);
+}
+
 function selectPayment(methodId) {
   appState.selectedPaymentId = methodId;
   document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
