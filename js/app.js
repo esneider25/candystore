@@ -391,6 +391,13 @@ function filterCategory(categoryId) {
 }
 
 // -- Package Selection --
+function selectMockupPackage(index) {
+  appState.selectedPackageIndex = index;
+  document.querySelectorAll('.mockup-package').forEach(pkg => pkg.classList.remove('selected'));
+  const selected = document.getElementById(`mockup-pkg-${index}`);
+  if (selected) selected.classList.add('selected');
+}
+
 function selectPackage(productId, index) {
   appState.selectedPackageIndex = index;
   document.querySelectorAll('.package-card').forEach(card => card.classList.remove('selected'));

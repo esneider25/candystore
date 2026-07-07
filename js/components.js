@@ -80,7 +80,7 @@ function renderMockupDashboard() {
       packagesHtml = (selectedProduct.packages || []).map((pkg, i) => {
         const isSelected = appState.selectedPackageIndex === i ? 'selected' : '';
         return `
-          <div class="mockup-package ${isSelected}" onclick="appState.selectedPackageIndex = ${i}; renderApp();">
+          <div class="mockup-package ${isSelected}" id="mockup-pkg-${i}" onclick="selectMockupPackage(${i})">
             ${i === 1 ? '<span class="mockup-package-bonus">+10 Bonus</span>' : ''}
             <div class="mockup-package-amount">
               <span style="font-size:0.9rem; color:#00d2ff;">💎</span> ${pkg.amount.toLocaleString()}
