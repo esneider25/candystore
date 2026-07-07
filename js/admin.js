@@ -240,33 +240,48 @@ function renderAdminLogin(container) {
     btn.disabled = true;
     errorDiv.style.display = 'none';
 
-    firebase.auth().signInWithEmailAndPassword(email, pass)
-      .then(result => {
-        if (result.user.email !== 'admin@CandyStore.com') {
-          firebase.auth().signOut().then(() => {
-            errorDiv.textContent = 'Acceso denegado: No eres administrador.';
-            errorDiv.style.display = 'block';
-            btn.innerHTML = 'Iniciar Sesión';
-            btn.disabled = false;
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Admin Login Error:', error);
-        // Fallback for offline/development mode
-        if (email === 'admin@CandyStore.com' || email === 'admin@candystore.com') {
-          if (pass === '123456') {
-            console.log("Offline Dev Mode Login");
-            adminAuthVerified = true;
-            initAdminApp();
-            return;
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      firebase.auth().signInWithEmailAndPassword(email, pass)
+        .then(result => {
+          if (result.user.email !== 'admin@CandyStore.com') {
+            firebase.auth().signOut().then(() => {
+              errorDiv.textContent = 'Acceso denegado: No eres administrador.';
+              errorDiv.style.display = 'block';
+              btn.innerHTML = 'Iniciar Sesión';
+              btn.disabled = false;
+            });
           }
+        })
+        .catch(error => {
+          console.error('Admin Login Error:', error);
+          if (email === 'admin@CandyStore.com' || email === 'admin@candystore.com') {
+            if (pass === '123456') {
+              console.log("Offline Dev Mode Login");
+              adminAuthVerified = true;
+              initAdminApp();
+              return;
+            }
+          }
+          errorDiv.textContent = 'Credenciales incorrectas o error de conexión.';
+          errorDiv.style.display = 'block';
+          btn.innerHTML = 'Iniciar Sesión';
+          btn.disabled = false;
+        });
+    } else {
+      // Offline mode fallback directly
+      if (email === 'admin@CandyStore.com' || email === 'admin@candystore.com') {
+        if (pass === '123456') {
+          console.log("Offline Dev Mode Login (No Firebase)");
+          adminAuthVerified = true;
+          initAdminApp();
+          return;
         }
-        errorDiv.textContent = 'Credenciales incorrectas o error de conexión.';
-        errorDiv.style.display = 'block';
-        btn.innerHTML = 'Iniciar Sesión';
-        btn.disabled = false;
-      });
+      }
+      errorDiv.textContent = 'Credenciales incorrectas (Modo Local).';
+      errorDiv.style.display = 'block';
+      btn.innerHTML = 'Iniciar Sesión';
+      btn.disabled = false;
+    }
   });
 }
 
