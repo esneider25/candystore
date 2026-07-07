@@ -516,9 +516,24 @@ function renderProductDetail(productId) {
 function renderPaymentDetails(methodId) {
   const method = PAYMENT_METHODS.find(m => m.id === methodId);
   if (!method) return '';
-  const rows = Object.entries(method.details).map(([key, val]) => `
+  
+  let detailsObj = {};
+  if (typeof method.details === 'string') {
+    method.details.split('\n').forEach(line => {
+      const parts = line.split(':');
+      if (parts.length >= 2) {
+        detailsObj[parts[0].trim().toLowerCase()] = parts.slice(1).join(':').trim();
+      } else if (line.trim()) {
+        detailsObj['detalle'] = line.trim();
+      }
+    });
+  } else {
+    detailsObj = method.details || {};
+  }
+
+  const rows = Object.entries(detailsObj).map(([key, val]) => `
     <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
-      <span style="color: #9ca3af; font-size: 0.9rem;">${formatDetailLabel(key)}</span>
+      <span style="color: #9ca3af; font-size: 0.9rem; text-transform: capitalize;">${formatDetailLabel(key)}</span>
       <span style="color: #fff; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
         ${val}
         <button onclick="copyToClipboard('${val}')" title="Copiar" style="background: rgba(14, 165, 233, 0.2); border: 1px solid #0ea5e9; color: #0ea5e9; cursor: pointer; font-size: 1rem; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;">Copiar</button>
