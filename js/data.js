@@ -391,6 +391,31 @@ function initFirebaseDataSync() {
       if (typeof renderActiveTab === 'function' && adminState && adminState.currentTab === 'categories') renderActiveTab();
     }
   });
+
+  // Solo sincronizar todas las órdenes y usuarios si estamos en el panel de administrador
+  if (window.location.pathname.includes('admin')) {
+    db.ref('orders').on('value', snap => {
+      if (snap.exists()) {
+        let ordersObj = snap.val();
+        ORDERS = Array.isArray(ordersObj) ? ordersObj.filter(o => o !== null) : Object.values(ordersObj).filter(o => o !== null);
+        if (typeof renderActiveTab === 'function') renderActiveTab();
+      } else {
+        ORDERS = [];
+      }
+    });
+
+    db.ref('users').on('value', snap => {
+      if (snap.exists()) {
+        let usersObj = snap.val();
+        window.ADMIN_CUSTOMERS = Array.isArray(usersObj) ? usersObj.filter(o => o !== null) : Object.keys(usersObj).map(uid => ({ uid, ...usersObj[uid] }));
+        const elUsers = document.getElementById('dash-total-users');
+        if (elUsers) elUsers.innerText = window.ADMIN_CUSTOMERS.length;
+        if (typeof renderActiveTab === 'function' && adminState && adminState.currentTab === 'customers') renderActiveTab();
+      } else {
+        window.ADMIN_CUSTOMERS = [];
+      }
+    });
+  }
 }
 initFirebaseDataSync();
 
