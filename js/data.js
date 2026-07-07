@@ -332,8 +332,8 @@ function initOfflineData() {
   ];
 
   PAYMENT_METHODS = [
-    { id: 'pagomovil', name: 'Pago Móvil', type: 'fiat', details: 'Banco: Banesco\nTel: 0412-1234567\nCédula: V-12345678' },
-    { id: 'binance', name: 'Binance Pay', type: 'crypto', details: 'Pay ID: 123456789' }
+    { id: 'pagomovil', name: 'Pago Móvil', type: 'fiat', icon: '📱', details: 'Banco: Banesco\nTel: 0412-1234567\nCédula: V-12345678' },
+    { id: 'binance', name: 'Binance Pay', type: 'crypto', icon: '🔶', details: 'Pay ID: 123456789' }
   ];
 
   window.DATA_LOADED = true;
