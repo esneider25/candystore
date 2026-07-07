@@ -187,6 +187,59 @@ function initAdminApp() {
   renderActiveTab();
 }
 
+// ── Standalone PWA Install Modal (admin doesn't load app.js) ──
+if (typeof window.showManualInstallModal === 'undefined') {
+  window.showManualInstallModal = function() {
+    if (document.getElementById('pwa-manual-install-modal')) return;
+    const modalContainer = document.createElement('div');
+    modalContainer.id = 'pwa-manual-install-modal';
+    modalContainer.innerHTML = `
+      <div class="modal-overlay active" style="z-index: 9999; backdrop-filter: blur(8px); position: fixed; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.7);">
+        <div style="text-align: center; max-width: 450px; border: 1px solid var(--border); background: var(--bg-surface, #1f2937); padding: 35px 25px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); color: var(--text-primary, #f3f4f6);">
+          <div style="font-size: 3.5rem; margin-bottom: 15px;">📲</div>
+          <h3 style="margin-bottom: 15px; font-size: 1.6rem;">Instalar Aplicación</h3>
+          <p style="color: var(--text-secondary, #9ca3af); margin-bottom: 25px; font-size: 0.95rem; line-height: 1.5;">
+            Tu dispositivo requiere instalación manual. Sigue estos rápidos pasos:
+          </p>
+          <div style="text-align: left; background: var(--bg-deep, #111827); border: 1px solid var(--border, rgba(255,255,255,0.1)); border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+            <div style="margin-bottom: 20px;">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                <span style="font-size:1.5rem;">🍎</span>
+                <strong style="font-size:1.05rem;">En iPhone (Safari)</strong>
+              </div>
+              <p style="color:var(--text-secondary, #9ca3af); font-size:0.9rem; margin-left:34px; line-height:1.5;">
+                1. Toca el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba).<br>
+                2. Selecciona <b>"Agregar a inicio"</b>.
+              </p>
+            </div>
+            <div style="height:1px; background:var(--border, rgba(255,255,255,0.1)); margin-bottom:20px;"></div>
+            <div>
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                <span style="font-size:1.5rem;">🤖</span>
+                <strong style="font-size:1.05rem;">En Android (Chrome)</strong>
+              </div>
+              <p style="color:var(--text-secondary, #9ca3af); font-size:0.9rem; margin-left:34px; line-height:1.5;">
+                1. Toca el <b>Menú</b> (los 3 puntos arriba a la derecha).<br>
+                2. Selecciona <b>"Instalar aplicación"</b> o <b>"Agregar a inicio"</b>.
+              </p>
+            </div>
+          </div>
+          <button id="close-pwa-modal-btn" style="width: 100%; padding: 12px; font-size: 1rem; cursor:pointer; background: var(--accent, #ec4899); color: white; border: none; border-radius: 12px; font-weight: bold;">
+            ¡Entendido! 👍
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modalContainer);
+    document.getElementById('close-pwa-modal-btn').addEventListener('click', () => {
+      modalContainer.remove();
+    });
+    modalContainer.querySelector('.modal-overlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) modalContainer.remove();
+    });
+  };
+}
+
 function handleAdminInstallClick() {
   if (window.deferredAdminPrompt) {
     window.deferredAdminPrompt.prompt();
