@@ -1930,8 +1930,6 @@ window.verifyGameId = async function(productId) {
 
   try {
     let bUrl = api.baseUrl.trim();
-    let proxyBaseUrl = bUrl;
-    let proxyEndpoint = 'check'; // Default for Smile.One
     let finalMethod = 'POST';
 
     // Manejar formato de TiendaGiftVen, NetEase Bloodstrike o cualquier API por GET
@@ -1959,48 +1957,50 @@ window.verifyGameId = async function(productId) {
       if (!bUrl.includes(encodeURIComponent(id_juego))) {
          bUrl = bUrl.endsWith('=') ? bUrl + encodeURIComponent(id_juego) : bUrl + '&id=' + encodeURIComponent(id_juego);
       }
-      
-      // Separar baseUrl y endpoint para evitar doble slash en el proxy
-      const queryIndex = bUrl.indexOf('?');
-      const basePath = queryIndex > -1 ? bUrl.substring(0, queryIndex) : bUrl;
-      const queryPart = queryIndex > -1 ? bUrl.substring(queryIndex) : '';
-      
-      const lastSlashIdx = basePath.lastIndexOf('/');
-      if (lastSlashIdx > 8) {
-        proxyBaseUrl = basePath.substring(0, lastSlashIdx);
-        proxyEndpoint = basePath.substring(lastSlashIdx + 1) + queryPart; 
-      } else {
-        proxyBaseUrl = basePath;
-        proxyEndpoint = queryPart.startsWith('?') ? queryPart.substring(1) : queryPart;
-      }
-    } else {
-      proxyBaseUrl = bUrl.endsWith('/') ? bUrl.slice(0, -1) : bUrl;
     }
 
-    const proxyUrl = '/api/proxy';
+    // Usar proxy CORS público ya que no hay un backend de NodeJS (/api/proxy)
+    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(bUrl);
     
-    const requestBody = {
-      endpoint: proxyEndpoint,
+    let fetchOptions = {
       method: finalMethod,
-      apiKey: api.apiKey || '',
-      baseUrl: proxyBaseUrl
+      headers: {}
     };
 
+    if (api.apiKey) {
+      fetchOptions.headers['Authorization'] = `Bearer ${api.apiKey}`;
+    }
+
     if (finalMethod === 'POST') {
-      requestBody.data = {
+      fetchOptions.headers['Content-Type'] = 'application/json';
+      let postData = {
         producto_id: parseInt(product.apiServiceId) || 0,
         id_juego: id_juego
       };
-      if (input2) requestBody.data.input2 = input2;
+      if (input2) postData.input2 = input2;
+      fetchOptions.body = JSON.stringify(postData);
     }
 
-    const response = await fetch(proxyUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody)
-    });
+    let response;
+    try {
+      response = await fetch(proxyUrl, fetchOptions);
+    } catch (e) {
+      // Fallback a allorigins si corsproxy.io falla (solo sirve para GET)
+      if (finalMethod === 'GET') {
+         response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(bUrl)}`);
+      } else {
+         throw e;
+      }
+    }
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch (e) {
+      // Si no es JSON, intentar texto
+      const text = await response.text();
+      throw new Error("Respuesta no válida: " + text.substring(0, 50));
+    }
 
     // Comprobar éxito (código 200 numérico o string, o si existe data.data)
     const isSuccess = data.ok || data.status == 200 || data.code == 200 || data.success || data.alerta === 'green' || data.mensaje === 'Consulta exitosa' || (data.data && typeof data.data === 'object' && !Array.isArray(data.data));
