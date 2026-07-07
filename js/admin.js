@@ -133,9 +133,7 @@ function initAdminApp() {
           <li class="admin-nav-item" data-tab="banners" onclick="switchTab('banners')">
             <span class="admin-nav-icon">🖼️</span> Banners
           </li>
-          <li class="admin-nav-item" data-tab="landing" onclick="switchTab('landing')">
-            <span class="admin-nav-icon">🎨</span> Diseño Web
-          </li>
+
           <li class="admin-nav-item" data-tab="categories" onclick="switchTab('categories')">
             <span class="admin-nav-icon">📁</span> Categorías
           </li>
@@ -367,7 +365,6 @@ function renderActiveTab() {
     case 'products': renderProducts(main); break;
     case 'customers': renderCustomers(main); break;
     case 'banners': renderBanners(main); break;
-    case 'landing': renderLanding(main); break;
     case 'categories': renderCategories(main); break;
     case 'payments': renderPayments(main); break;
     case 'exchange': renderExchange(main); break;
@@ -4373,148 +4370,7 @@ function executeDeleteBanner(id) {
   }
 }
 
-// ════════════════════════════════════════
-// GESTIÓN LANDING
-// ════════════════════════════════════════
-function renderLanding(container) {
-  const config = (typeof getLandingConfig === 'function') ? getLandingConfig() : {};
-  const hero = config.heroStats || [{}, {}, {}, {}];
-  const how = config.howItWorks || [{}, {}, {}];
-  const features = config.features || [{}, {}, {}, {}, {}, {}];
-  const faq = config.faq || [{}, {}, {}, {}];
-  const footer = config.footer || {};
 
-  container.innerHTML = `
-    <div class="admin-header">
-      <div>
-        <h1 class="admin-title">🎨 Diseño Web (Gestión Landing)</h1>
-        <p class="admin-subtitle">Modifica los textos, estadísticas y pasos de la página principal</p>
-      </div>
-      <button class="btn btn-primary" onclick="adminSaveLanding()">
-        <span>💾</span> Guardar Cambios
-      </button>
-    </div>
-
-    <!-- 1. Estadísticas del Hero -->
-    <div class="admin-card" style="margin-bottom: 20px;">
-      <h2 class="admin-card-title">Estadísticas de Portada (Hero)</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Ajusta los 4 números que aparecen en la parte superior del inicio.</p>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-        ${[0, 1, 2, 3].map(i => `
-          <div class="admin-form-group" style="background: var(--bg-deep); padding: 10px; border-radius: 8px;">
-            <label style="font-size: 0.8rem; color: var(--text-secondary);">Valor ${i + 1}</label>
-            <input type="text" id="landing-hero-val-${i}" class="admin-form-input" value="${hero[i] && hero[i].value ? hero[i].value : ''}" placeholder="Ej: 15000">
-            <label style="margin-top: 10px; font-size: 0.8rem; color: var(--text-secondary);">Texto ${i + 1}</label>
-            <input type="text" id="landing-hero-lbl-${i}" class="admin-form-input" value="${hero[i] && hero[i].label ? hero[i].label : ''}" placeholder="Ej: Recargas realizadas">
-          </div>
-        `).join('')}
-      </div>
-    </div>
-
-    <!-- 2. Cómo Funciona -->
-    <div class="admin-card" style="margin-bottom: 20px;">
-      <h2 class="admin-card-title">¿Cómo Funciona? (Pasos)</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Edita los 3 pasos explicativos de la tienda.</p>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
-        ${[0, 1, 2].map(i => `
-          <div class="admin-form-group" style="background: var(--bg-deep); padding: 15px; border-radius: 8px;">
-            <label style="font-size: 0.8rem; color: var(--text-secondary);">Icono (Emoji)</label>
-            <input type="text" id="landing-how-icon-${i}" class="admin-form-input" value="${how[i] && how[i].icon ? how[i].icon : ''}" placeholder="Ej: 🛒">
-            <label style="margin-top: 10px; font-size: 0.8rem; color: var(--text-secondary);">Título Paso ${i + 1}</label>
-            <input type="text" id="landing-how-title-${i}" class="admin-form-input" value="${how[i] && how[i].title ? how[i].title : ''}" placeholder="Ej: Elige tu Producto">
-            <label style="margin-top: 10px; font-size: 0.8rem; color: var(--text-secondary);">Descripción Paso ${i + 1}</label>
-            <textarea id="landing-how-desc-${i}" class="admin-form-textarea" rows="2">${how[i] && how[i].desc ? how[i].desc : ''}</textarea>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-
-    <!-- 3. ¿Por qué CandyStore? (Ventajas) -->
-    <div class="admin-card" style="margin-bottom: 20px;">
-      <h2 class="admin-card-title">¿Por qué CandyStore? (Ventajas)</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Edita las 6 ventajas competitivas.</p>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
-        ${[0, 1, 2, 3, 4, 5].map(i => `
-          <div class="admin-form-group" style="background: var(--bg-deep); padding: 15px; border-radius: 8px;">
-            <label style="font-size: 0.8rem; color: var(--text-secondary);">Icono (Emoji) ${i + 1}</label>
-            <input type="text" id="landing-feat-icon-${i}" class="admin-form-input" value="${features[i] && features[i].icon ? features[i].icon : ''}" placeholder="Ej: ⚡">
-            <label style="margin-top: 10px; font-size: 0.8rem; color: var(--text-secondary);">Título Ventaja ${i + 1}</label>
-            <input type="text" id="landing-feat-title-${i}" class="admin-form-input" value="${features[i] && features[i].title ? features[i].title : ''}">
-            <label style="margin-top: 10px; font-size: 0.8rem; color: var(--text-secondary);">Descripción Ventaja ${i + 1}</label>
-            <textarea id="landing-feat-desc-${i}" class="admin-form-textarea" rows="2">${features[i] && features[i].desc ? features[i].desc : ''}</textarea>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-
-    <!-- 4. Preguntas Frecuentes (FAQ) -->
-    <div class="admin-card" style="margin-bottom: 20px;">
-      <h2 class="admin-card-title">Preguntas Frecuentes (FAQ)</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Edita las 4 preguntas más frecuentes.</p>
-      <div style="display: flex; flex-direction: column; gap: 15px;">
-        ${[0, 1, 2, 3].map(i => `
-          <div class="admin-form-group" style="background: var(--bg-deep); padding: 15px; border-radius: 8px;">
-            <label style="font-size: 0.8rem; color: var(--text-secondary);">Pregunta ${i + 1}</label>
-            <input type="text" id="landing-faq-q-${i}" class="admin-form-input" value="${faq[i] && faq[i].q ? faq[i].q : ''}">
-            <label style="margin-top: 10px; font-size: 0.8rem; color: var(--text-secondary);">Respuesta ${i + 1}</label>
-            <textarea id="landing-faq-a-${i}" class="admin-form-textarea" rows="2">${faq[i] && faq[i].a ? faq[i].a : ''}</textarea>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-
-    <!-- 5. Footer -->
-    <div class="admin-card">
-      <h2 class="admin-card-title">Pie de Página (Footer)</h2>
-      <div class="admin-form-group">
-        <label style="font-size: 0.8rem; color: var(--text-secondary);">Texto Legal / Descargo de Responsabilidad</label>
-        <textarea id="landing-footer-disc" class="admin-form-textarea" rows="3">${footer.disclaimer || ''}</textarea>
-      </div>
-    </div>
-  `;
-}
-
-function adminSaveLanding() {
-  try {
-    const newConfig = {
-      heroStats: [0, 1, 2, 3].map(i => {
-        const valEl = document.getElementById(`landing-hero-val-${i}`);
-        const lblEl = document.getElementById(`landing-hero-lbl-${i}`);
-        return { value: valEl ? valEl.value : '', label: lblEl ? lblEl.value : '' };
-      }),
-      howItWorks: [0, 1, 2].map(i => {
-        const icEl = document.getElementById(`landing-how-icon-${i}`);
-        const titEl = document.getElementById(`landing-how-title-${i}`);
-        const descEl = document.getElementById(`landing-how-desc-${i}`);
-        return { icon: icEl ? icEl.value : '', title: titEl ? titEl.value : '', desc: descEl ? descEl.value : '' };
-      }),
-      features: [0, 1, 2, 3, 4, 5].map(i => {
-        const icEl = document.getElementById(`landing-feat-icon-${i}`);
-        const titEl = document.getElementById(`landing-feat-title-${i}`);
-        const descEl = document.getElementById(`landing-feat-desc-${i}`);
-        return { icon: icEl ? icEl.value : '', title: titEl ? titEl.value : '', desc: descEl ? descEl.value : '' };
-      }),
-      faq: [0, 1, 2, 3].map(i => {
-        const qEl = document.getElementById(`landing-faq-q-${i}`);
-        const aEl = document.getElementById(`landing-faq-a-${i}`);
-        return { q: qEl ? qEl.value : '', a: aEl ? aEl.value : '' };
-      }),
-      footer: {
-        disclaimer: document.getElementById('landing-footer-disc') ? document.getElementById('landing-footer-disc').value : ''
-      }
-    };
-
-    if (typeof saveLandingConfig === 'function') {
-      saveLandingConfig(newConfig);
-      showAdminToast('✅ Diseño Web guardado', 'success');
-    } else {
-      showAdminToast('❌ Error: Función de guardado no encontrada', 'error');
-    }
-  } catch (err) {
-    console.error("Error en adminSaveLanding:", err);
-    alert("Error al guardar: " + err.message);
-  }
-}
 
 window.normalizeLegacyData = async function () {
   if (!confirm("¿Deseas normalizar y actualizar todos los datos antiguos al nuevo formato? Esto puede tardar unos segundos y solo debe hacerse una vez.")) return;

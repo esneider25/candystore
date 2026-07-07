@@ -251,13 +251,26 @@ function renderMockupDashboard() {
 
   return `
     <main class="mockup-main">
-      <!-- Banner Promocional -->
-      <section class="mockup-banner" style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');">
-        <div class="mockup-banner-overlay"></div>
-        <div class="mockup-banner-content">
-          <span class="mockup-badge">Promoción</span>
-          <h1 class="mockup-banner-title">Bonus del 10% en <br>tu primera recarga</h1>
-          <button class="mockup-btn">Ver Detalles</button>
+      <!-- Carrusel Promocional Dinámico -->
+      <section class="promo-carousel-container" style="position: relative; margin-bottom: 40px; overflow: hidden; border-radius: 12px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+        <div class="promo-carousel" id="promo-carousel" style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none;">
+          ${(typeof BANNERS !== 'undefined' && BANNERS.length > 0) ? BANNERS.map(b => `
+            <div class="promo-card" style="flex: 0 0 100%; min-width: 100%; scroll-snap-align: center; position: relative; height: 288px; background: ${b.imageUrl ? `url('${b.imageUrl}') center/cover no-repeat, ` : ''}${b.bgGradient || 'var(--bg-card)'};">
+              <div class="mockup-banner-overlay" style="position: absolute; inset: 0; background: linear-gradient(to right, #111827, rgba(17, 24, 39, 0.7), transparent);"></div>
+              <div class="mockup-banner-content" style="position: absolute; inset: 0; padding: 0 64px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; z-index: 2;">
+                ${b.badge ? `<span class="mockup-badge" style="background-color: ${b.badgeColor || '#ec4899'}; color: white; font-size: 0.75rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; margin-bottom: 8px;">${b.badge}</span>` : ''}
+                <h1 class="mockup-banner-title" style="font-size: 3rem; font-weight: 900; color: white; margin-top: 8px; margin-bottom: 16px; line-height: 1.2; text-transform: uppercase;">${b.title}</h1>
+                ${b.desc ? `<p style="color: #d1d5db; margin-bottom: 24px; max-width: 50%; font-size: 1.1rem; line-height: 1.5;">${b.desc}</p>` : ''}
+                ${b.btnText ? `<button class="mockup-btn" style="background-color: ${b.btnColor || '#db2777'}; color: ${b.btnTextColor || 'white'}; font-weight: 700; padding: 8px 24px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.3s;" onclick="${b.btnLink && b.btnLink.startsWith('product:') ? `appState.selectedProductId='${b.btnLink.split(':')[1]}'; appState.currentView='product'; renderApp();` : `appState.currentView='${b.btnLink}'; renderApp();`}">${b.btnText}</button>` : ''}
+              </div>
+            </div>
+          `).join('') : `
+            <div class="promo-card" style="flex: 0 0 100%; min-width: 100%; scroll-snap-align: center; position: relative; height: 288px; background: var(--bg-card);">
+              <div class="mockup-banner-content" style="position: absolute; inset: 0; padding: 0 64px; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2;">
+                <h1 class="mockup-banner-title" style="color: var(--text-muted); font-size: 2rem;">Sin Promociones</h1>
+              </div>
+            </div>
+          `}
         </div>
       </section>
 

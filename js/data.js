@@ -375,6 +375,22 @@ function initFirebaseDataSync() {
     }
   });
 
+  db.ref('exchange_rate').on('value', snap => {
+    if (snap.exists()) {
+      EXCHANGE_RATE = snap.val();
+      if (typeof renderApp === 'function') renderApp();
+      if (typeof renderActiveTab === 'function' && adminState && adminState.currentTab === 'exchange') renderActiveTab();
+    }
+  });
+
+  db.ref('banners').on('value', snap => {
+    if (snap.exists()) {
+      BANNERS = snap.val();
+      if (typeof renderApp === 'function') renderApp();
+      if (typeof renderActiveTab === 'function' && adminState && adminState.currentTab === 'banners') renderActiveTab();
+    }
+  });
+
   db.ref('products').on('value', snap => {
     if (snap.exists()) {
       PRODUCTS = snap.val();
