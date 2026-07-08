@@ -349,9 +349,14 @@ function initFirebaseDataSync() {
   
   db.ref('payment_methods').on('value', snap => {
     if (snap.exists()) {
-      PAYMENT_METHODS = snap.val();
+      const val = snap.val();
+      PAYMENT_METHODS = Array.isArray(val) ? val : Object.values(val);
+      PAYMENT_METHODS = PAYMENT_METHODS.filter(Boolean); // Remove nulls
       if (typeof renderApp === 'function') renderApp();
-      if (typeof renderActiveTab === 'function' && adminState && adminState.currentTab === 'settings') renderActiveTab();
+      if (typeof renderActiveTab === 'function' && adminState && adminState.currentTab === 'payments') renderActiveTab();
+    } else {
+      PAYMENT_METHODS = [];
+      if (typeof renderActiveTab === 'function' && adminState && adminState.currentTab === 'payments') renderActiveTab();
     }
   });
 
@@ -385,8 +390,13 @@ function initFirebaseDataSync() {
 
   db.ref('banners').on('value', snap => {
     if (snap.exists()) {
-      BANNERS = snap.val();
+      const val = snap.val();
+      BANNERS = Array.isArray(val) ? val : Object.values(val);
+      BANNERS = BANNERS.filter(Boolean); // Remove nulls
       if (typeof renderApp === 'function') renderApp();
+      if (typeof renderActiveTab === 'function' && adminState && adminState.currentTab === 'banners') renderActiveTab();
+    } else {
+      BANNERS = [];
       if (typeof renderActiveTab === 'function' && adminState && adminState.currentTab === 'banners') renderActiveTab();
     }
   });
