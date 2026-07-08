@@ -1370,14 +1370,28 @@ function deleteCategory(catId) {
 // ════════════════════════════════════════
 function renderPayments(container) {
   const paymentCardsHtml = PAYMENT_METHODS.map(method => {
-    let detailFieldsHtml = '';
-    Object.entries(method.details || {}).forEach(([key, val]) => {
-      detailFieldsHtml += `
-        <div class="admin-form-group">
-          <label class="admin-form-label">${formatPaymentLabel(key)}</label>
-          <input type="text" class="admin-form-input payment-detail-input"
-                 data-method-id="${method.id}" data-detail-key="${key}" value="${val}">
-        </div>
+    let detailsText = '';
+    if (typeof method.details === 'string') {
+      detailsText = method.details;
+    } else if (method.details) {
+      detailsText = Object.entries(method.details).map(([k, v]) => `${formatPaymentLabel(k)}: ${v}`).join('\n');
+    }
+
+    let fieldsHtml = '';
+    const possibleFields = [
+      { id: 'referencia', label: 'Nro. de Referencia' },
+      { id: 'email', label: 'Correo (Zinli/Binance)' },
+      { id: 'telefono', label: 'Teléfono' },
+      { id: 'cedula', label: 'Cédula / RIF' },
+      { id: 'nota', label: 'Nota / Mensaje' }
+    ];
+    
+    possibleFields.forEach(f => {
+      const isChecked = method.fields && method.fields.includes(f.id) ? 'checked' : '';
+      fieldsHtml += `
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem;">
+          <input type="checkbox" class="payment-field-cb" data-method-id="${method.id}" value="${f.id}" ${isChecked}> ${f.label}
+        </label>
       `;
     });
 
@@ -1392,8 +1406,16 @@ function renderPayments(container) {
             🗑️
           </button>
         </div>
-        <div class="admin-payment-details-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 15px;">
-          ${detailFieldsHtml}
+        <div class="admin-form-group" style="margin-top: 15px;">
+          <label class="admin-form-label">Tus Datos (Lo que verá el cliente para pagarte)</label>
+          <textarea class="admin-form-input payment-detail-input" data-method-id="${method.id}" rows="3" placeholder="Ej: Correo: admin@zinli.com&#10;Titular: Juan Perez" style="resize: vertical;">${detailsText}</textarea>
+        </div>
+        
+        <div class="admin-form-group" style="margin-top: 15px;">
+          <label class="admin-form-label">Datos que debe llenar el cliente</label>
+          <div style="display: flex; flex-wrap: wrap; gap: 15px; background: rgba(0,0,0,0.1); padding: 12px; border-radius: 6px; border: 1px solid var(--border);">
+            ${fieldsHtml}
+          </div>
         </div>
         <div class="admin-form-group" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
           <label class="admin-form-label">Moneda a cobrar al cliente</label>
@@ -1452,10 +1474,21 @@ function savePaymentMethods() {
   const detailInputs = document.querySelectorAll('.payment-detail-input');
   detailInputs.forEach(input => {
     const methodId = input.getAttribute('data-method-id');
-    const detailKey = input.getAttribute('data-detail-key');
     const value = input.value.trim();
     const method = PAYMENT_METHODS.find(m => m.id === methodId);
-    if (method && method.details) method.details[detailKey] = value;
+    if (method) method.details = value;
+  });
+
+  // Update fields
+  PAYMENT_METHODS.forEach(m => m.fields = []);
+  const fieldCheckboxes = document.querySelectorAll('.payment-field-cb:checked');
+  fieldCheckboxes.forEach(cb => {
+    const methodId = cb.getAttribute('data-method-id');
+    const method = PAYMENT_METHODS.find(m => m.id === methodId);
+    if (method) {
+      if (!method.fields) method.fields = [];
+      method.fields.push(cb.value);
+    }
   });
 
   const currencySelects = document.querySelectorAll('.payment-currency-select');
@@ -1493,32 +1526,31 @@ function addPaymentMethod() {
       
       <div class="admin-form-group" style="margin-top: 20px;">
         <label class="admin-form-label" style="margin-bottom: 12px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
-          ¿Qué datos le pedirás al cliente para este pago? (Selecciona los necesarios)
+          Tus Datos (Lo que verá el cliente para pagarte)
+        </label>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Escribe los datos de tu cuenta bancaria o billetera. Un dato por línea.</p>
+        <textarea id="new-pm-details" class="admin-form-input" rows="4" placeholder="Correo: admin@zinli.com&#10;Titular: Juan Perez" style="resize: vertical;"></textarea>
+      </div>
+      
+      <div class="admin-form-group" style="margin-top: 20px;">
+        <label class="admin-form-label" style="margin-bottom: 12px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+          ¿Qué datos le pedirás al cliente para confirmar su pago?
         </label>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
           <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" class="new-pm-field-cb" value="titular" checked> Titular de la cuenta
+            <input type="checkbox" class="new-pm-field-cb" value="referencia" checked> Nro. de Referencia
           </label>
           <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" class="new-pm-field-cb" value="cedula"> Cédula / Rif
+            <input type="checkbox" class="new-pm-field-cb" value="email"> Correo (Zinli/Binance)
           </label>
           <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" class="new-pm-field-cb" value="telefono"> Teléfono
+            <input type="checkbox" class="new-pm-field-cb" value="telefono"> Teléfono (Pago Móvil)
           </label>
           <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" class="new-pm-field-cb" value="banco"> Banco de origen
+            <input type="checkbox" class="new-pm-field-cb" value="cedula"> Cédula / RIF
           </label>
           <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" class="new-pm-field-cb" value="cuenta"> Nro. de Cuenta
-          </label>
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" class="new-pm-field-cb" value="nota" checked> Nota / Referencia
-          </label>
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" class="new-pm-field-cb" value="binanceId"> Binance Pay ID
-          </label>
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" class="new-pm-field-cb" value="wallet"> Wallet (USDT)
+            <input type="checkbox" class="new-pm-field-cb" value="nota"> Nota / Mensaje
           </label>
         </div>
       </div>
@@ -1546,13 +1578,12 @@ function saveNewPaymentMethod() {
   }
 
   const id = 'pm-' + Date.now();
-  const details = {};
-  fields.forEach(f => details[f] = "");
+  const details = document.getElementById('new-pm-details').value.trim();
 
   if (!Array.isArray(PAYMENT_METHODS)) PAYMENT_METHODS = [];
 
   PAYMENT_METHODS.push({
-    id, name, icon, currency, details, active: true
+    id, name, icon, currency, details, fields, active: true
   });
 
   saveToDb('payment_methods', PAYMENT_METHODS);
