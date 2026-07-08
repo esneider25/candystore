@@ -1549,6 +1549,8 @@ function saveNewPaymentMethod() {
   const details = {};
   fields.forEach(f => details[f] = "");
 
+  if (!Array.isArray(PAYMENT_METHODS)) PAYMENT_METHODS = [];
+
   PAYMENT_METHODS.push({
     id, name, icon, currency, details, active: true
   });
