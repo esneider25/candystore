@@ -380,6 +380,29 @@ function initFirebaseDataSync() {
     }
   });
 
+  db.ref('telegram_config').on('value', snap => {
+    if (snap.exists()) {
+      TELEGRAM_CONFIG = snap.val();
+      if (typeof renderActiveTab === 'function' && typeof adminState !== 'undefined' && adminState && adminState.currentTab === 'telegram') renderActiveTab();
+    }
+  });
+
+  db.ref('api_configs').on('value', snap => {
+    if (snap.exists()) {
+      API_CONFIGS = snap.val();
+      if (typeof renderActiveTab === 'function' && typeof adminState !== 'undefined' && adminState && adminState.currentTab === 'api') renderActiveTab();
+    }
+  });
+
+  db.ref('spam_tracker').on('value', snap => {
+    if (snap.exists()) {
+      SPAM_TRACKER = snap.val();
+      if (!SPAM_TRACKER.blocked) SPAM_TRACKER.blocked = [];
+      if (!SPAM_TRACKER.attempts) SPAM_TRACKER.attempts = [];
+      if (typeof renderActiveTab === 'function' && typeof adminState !== 'undefined' && adminState && adminState.currentTab === 'telegram') renderActiveTab();
+    }
+  });
+
   db.ref('exchange_rate').on('value', snap => {
     if (snap.exists()) {
       EXCHANGE_RATE = snap.val();
