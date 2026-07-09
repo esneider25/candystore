@@ -1421,8 +1421,8 @@ function renderPaymentModalHTML(product, pkg, isWalletRecharge = false) {
               </div>
             ` : `
             <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
-              <input type="text" id="customer-phone" placeholder="WhatsApp / Teléfono" class="admin-form-input" autocomplete="off" style="border-color: rgba(255,255,255,0.1);">
-              <input type="email" id="customer-email" placeholder="Correo Electrónico" class="admin-form-input" autocomplete="off" style="border-color: rgba(255,255,255,0.1);">
+              <input type="text" id="customer-phone" placeholder="WhatsApp / Teléfono" class="mockup-input" autocomplete="off" style="border-color: rgba(255,255,255,0.1);">
+              <input type="email" id="customer-email" placeholder="Correo Electrónico" class="mockup-input" autocomplete="off" style="border-color: rgba(255,255,255,0.1);">
             </div>
             <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 8px;">Te contactaremos para notificarte sobre tu pedido</div>
             `}
@@ -1430,8 +1430,8 @@ function renderPaymentModalHTML(product, pkg, isWalletRecharge = false) {
 
           <div class="checkout-section-title">🎟️ Código de Descuento</div>
           <div style="display:flex; gap:10px; width:100%; margin-bottom: 24px;">
-            <input type="text" id="discount-input" placeholder="INGRESA TU CÓDIGO" class="admin-form-input" style="flex:1; text-transform: uppercase; border-color: rgba(255,255,255,0.1);" autocomplete="off">
-            <button type="button" class="btn btn-secondary" onclick="applyDiscount()" style="padding:0 20px;">Aplicar</button>
+            <input type="text" id="discount-input" placeholder="INGRESA TU CÓDIGO" class="mockup-input" style="flex:1; text-transform: uppercase; border-color: rgba(255,255,255,0.1);" autocomplete="off">
+            <button class="btn-primary" type="button" onclick="applyDiscount()" style="width: auto; padding: 0 20px; flex-shrink: 0; min-height: 48px; margin: 0;">Aplicar</button>
           </div>
 
           <div class="checkout-summary-bar">
