@@ -1297,19 +1297,6 @@ function renderDashboardOrders(orders, type) {
     return `
     <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-left: 4px solid ${statusColor}; border-radius: 8px; padding: 20px; margin-bottom: 15px; transition: transform 0.2s ease, background 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.transform='translateY(0)'">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-        <div>
-          <span style="font-weight: 800; color: #fff; font-size: 1.1rem;">${order.productName || 'Producto'}</span>
-          <div style="color: #0ea5e9; font-weight: bold; margin-top: 5px;">${order.packageLabel || ''}</div>
-        </div>
-        <div style="text-align: right;">
-           <span style="background: ${statusColor}20; color: ${statusColor}; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; border: 1px solid ${statusColor}40;">${order.status.toUpperCase()}</span>
-           <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 8px;">Ord: #${order.id}</div>
-        </div>
-      </div>
-      <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px;">
-        Fecha: ${new Date(order.createdAt).toLocaleString()}
-      </div>
-      
       ${type === 'active' ? `
       <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 5px; font-weight: bold;">
         <span style="color: ${order.status === 'pending' || order.status === 'processing' ? '#0ea5e9' : 'var(--text-secondary)'}">1. Recibido</span>
