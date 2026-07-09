@@ -1347,6 +1347,188 @@ function toggleTheme() {
   const isLight = document.body.classList.contains('light-theme');
   localStorage.setItem('recargaCandyStore_theme', isLight ? 'light' : 'dark');
 }
+
+// ==========================================
+// Dashboard Component
+// ==========================================
+
+function renderDashboard() {
+  if (!currentUser) {
+    return `<div style="text-align:center; padding: 100px;"><h2>Por favor inicia sesión.</h2></div>`;
+  }
+
+  setTimeout(() => { if (typeof loadDashboardData === 'function') loadDashboardData(); }, 100);
+
+  const wallet = userProfile?.wallet || 0;
+  const spent = userProfile?.totalSpent || 0;
+  const points = userProfile?.points || 0;
+  const vip = typeof getVipLevel === 'function' ? getVipLevel(spent) : { name: 'Bronce', color: '#cd7f32', gradient: 'linear-gradient(135deg, #d4a373 0%, #a68a64 100%)', nextThreshold: 50 };
+  
+  let progressHtml = '';
+  if (vip.nextThreshold) {
+     const percent = Math.min(100, (spent / vip.nextThreshold) * 100);
+     progressHtml = `
+       <div style="margin-top: 15px; font-size: 0.8rem; color: var(--text-secondary);">
+         Progreso a siguiente nivel: $${spent.toFixed(2)} / $${vip.nextThreshold}
+         <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 5px; overflow: hidden;">
+           <div style="width: ${percent}%; height: 100%; background: ${vip.gradient}; transition: width 1s ease;"></div>
+         </div>
+       </div>
+     `;
+  } else {
+     progressHtml = `<div style="margin-top: 15px; font-size: 0.85rem; color: ${vip.color}; font-weight: bold;">¡Has alcanzado el nivel máximo!</div>`;
+  }
+
+  return `
+    <div class="dashboard-container" style="max-width: 1200px; margin: 40px auto; padding: 20px; color: white;">
+      <h1 style="margin-bottom: 30px; font-size: 2.5rem; text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">Panel de Usuario</h1>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        
+        <div style="background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 16px; display: flex; gap: 20px; align-items: center; position: relative; overflow: hidden;">
+          <div style="position: absolute; top: -50px; right: -50px; width: 100px; height: 100px; background: ${vip.gradient}; filter: blur(50px); opacity: 0.3;"></div>
+          <img src="${currentUser.photoURL || 'https://ui-avatars.com/api/?name=' + currentUser.email + '&background=0D8ABC&color=fff'}" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid ${vip.color}; box-shadow: 0 0 15px ${vip.color}40; position: relative; z-index: 2;">
+          <div style="flex: 1; position: relative; z-index: 2;">
+            <h3 style="margin: 0 0 5px 0; font-size: 1.3rem;">${currentUser.displayName || 'Usuario'}</h3>
+            <span style="background: ${vip.gradient}; color: #000; font-weight: bold; padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; box-shadow: 0 2px 10px ${vip.color}50;">VIP ${vip.name}</span>
+            ${progressHtml}
+          </div>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(16, 185, 129, 0.3); padding: 25px; border-radius: 16px; position: relative; overflow: hidden;">
+          <div style="position: absolute; bottom: -50px; left: -50px; width: 100px; height: 100px; background: #0ea5e9; filter: blur(50px); opacity: 0.2;"></div>
+          <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">Saldo Monedero</div>
+          <div style="font-size: 2.8rem; font-weight: 800; color: #0ea5e9; text-shadow: 0 0 15px rgba(16, 185, 129, 0.3);">\$${wallet.toFixed(2)}</div>
+          <div style="margin-top: 15px; display: flex; gap: 10px;">
+            <button onclick="startWalletRecharge()" class="btn-primary" style="flex: 1; padding: 8px;">+ Recargar</button>
+          </div>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(59, 130, 246, 0.3); padding: 25px; border-radius: 16px; position: relative; overflow: hidden;">
+          <div style="position: absolute; bottom: -50px; right: -50px; width: 100px; height: 100px; background: #3b82f6; filter: blur(50px); opacity: 0.2;"></div>
+          <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">CandyStore Points</div>
+          <div style="font-size: 2.5rem; font-weight: 800; color: #3b82f6; text-shadow: 0 0 15px rgba(59, 130, 246, 0.3);">${points}</div>
+          <div style="margin-top: 15px; display: flex; gap: 10px;">
+            <button onclick="if(typeof redeemPoints==='function')redeemPoints()" class="btn-secondary" style="flex: 1; padding: 8px; border-color: #3b82f6; color: #3b82f6;">Canjear por $1</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+        
+        <div>
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+              <h2 style="margin: 0; font-size: 1.5rem;">Mis Pedidos</h2>
+              <div style="display: flex; gap: 15px;">
+                <button id="tab-active-orders" onclick="switchDashboardTab('active')" style="background:none; border:none; color: #0ea5e9; border-bottom: 2px solid #0ea5e9; padding-bottom: 5px; cursor: pointer; font-weight: bold;">En Proceso</button>
+                <button id="tab-completed-orders" onclick="switchDashboardTab('completed')" style="background:none; border:none; color: var(--text-secondary); padding-bottom: 5px; cursor: pointer; font-weight: bold;">Completados</button>
+              </div>
+            </div>
+            <div id="dashboard-orders-container" style="min-height: 200px;">
+              <div style="text-align:center; padding: 40px;"><span class="tracking-spinner" style="display:inline-block; width:24px; height:24px; border:3px solid #0ea5e9; border-bottom-color:transparent; border-radius:50%; animation:spin 1s linear infinite;"></span></div>
+            </div>
+          </div>
+          
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 25px;">
+             <h2 style="margin: 0 0 20px 0; font-size: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">Historial de Billetera</h2>
+             <div id="dashboard-transactions-container" style="max-height: 300px; overflow-y: auto; padding-right: 10px;">
+                <div style="text-align:center; padding: 20px; color: var(--text-secondary);">Cargando movimientos...</div>
+             </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+              <h3 style="margin: 0;">Libreta de IDs</h3>
+              <button onclick="showAddIdModal()" class="btn-primary" style="padding: 5px 12px; font-size: 0.8rem; border-radius: 20px;">+ Añadir</button>
+            </div>
+            <div id="dashboard-saved-ids">
+              <div style="text-align:center; color:var(--text-secondary);"><small>Cargando...</small></div>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="btn-secondary" style="width: 100%; border-radius: 12px;" onclick="navigateTo('home')">Volver a la Tienda</button>
+            <button onclick="logout()" class="btn-secondary" style="width: 100%; border-radius: 12px; color: #ff5252; border-color: rgba(255, 82, 82, 0.3); background: rgba(255, 82, 82, 0.05);">Cerrar Sesión</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+function renderDashboardOrders(orders, type) {
+  if (orders.length === 0) {
+    return `
+      <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+        <div style="font-size: 3rem; margin-bottom: 10px; opacity: 0.5;">${type === 'active' ? '📦' : '✅'}</div>
+        <h3 style="font-weight: 500;">No tienes pedidos ${type === 'active' ? 'en proceso' : 'completados'}.</h3>
+      </div>
+    `;
+  }
+  
+  return orders.map(order => {
+    let statusColor = '#f59e0b';
+    if (order.status === 'processing') statusColor = '#3b82f6';
+    if (order.status === 'completed') statusColor = '#0ea5e9';
+    if (order.status === 'rejected') statusColor = '#ef4444';
+
+    return `
+    <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-left: 4px solid ${statusColor}; border-radius: 8px; padding: 20px; margin-bottom: 15px; transition: transform 0.2s ease, background 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.transform='translateY(0)'">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+      ${type === 'active' ? `
+      <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 5px; font-weight: bold;">
+        <span style="color: ${order.status === 'pending' || order.status === 'processing' ? '#0ea5e9' : 'var(--text-secondary)'}">1. Recibido</span>
+        <span style="color: ${order.status === 'processing' ? '#3b82f6' : 'var(--text-secondary)'}">2. Procesando</span>
+        <span>3. Entregado</span>
+      </div>
+      <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+        <div style="width: ${order.status === 'pending' ? '33%' : (order.status === 'processing' ? '66%' : '100%')}; height: 100%; background: ${statusColor}; transition: width 0.5s ease;"></div>
+      </div>
+      ` : ''}
+    </div>
+  `}).join('');
+}
+
+function renderDashboardTransactions() {
+  const container = document.getElementById('dashboard-transactions-container');
+  if (!container) return;
+  
+  if (!userProfile || !userProfile.transactions || userProfile.transactions.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-secondary);">No hay movimientos recientes.</div>`;
+    return;
+  }
+  
+  const sortedTx = [...userProfile.transactions].sort((a,b) => b.date - a.date);
+  
+  container.innerHTML = sortedTx.map(tx => {
+    let sign = tx.amount >= 0 ? '+' : '';
+    let color = tx.amount >= 0 ? '#0ea5e9' : '#ff5252';
+    let icon = tx.type === 'deposit' ? '💰' : (tx.type === 'purchase' ? '🛒' : '🔄');
+    return `
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 8px;">
+       <div style="display: flex; align-items: center; gap: 12px;">
+         <div style="font-size: 1.5rem; opacity: 0.8;">${icon}</div>
+         <div>
+           <div style="font-weight: bold; font-size: 0.9rem;">${tx.description || 'Movimiento'}</div>
+           <div style="font-size: 0.75rem; color: var(--text-secondary);">${new Date(tx.date).toLocaleString()}</div>
+         </div>
+       </div>
+       <div style="font-weight: bold; color: ${color};">${sign}\$${parseFloat(tx.amount).toFixed(2)}</div>
+    </div>
+    `;
+  }).join('');
+}
+
+// ── Theme Toggle ──
+function toggleTheme() {
+  document.body.classList.toggle('light-theme');
+  const isLight = document.body.classList.contains('light-theme');
+  localStorage.setItem('recargaCandyStore_theme', isLight ? 'light' : 'dark');
+}
 // Helper function to fill saved ID in the modal
 window.fillSavedId = function(uid, zoneId) {
   const uidInput = document.getElementById('game-uid');
@@ -1397,20 +1579,6 @@ function renderPaymentModalHTML(product, pkg, isWalletRecharge = false) {
           <div class="checkout-section-title">2. Instrucciones de Pago</div>
           <div id="checkout-payment-details-container"></div>
           
-          <div id="checkout-screenshot-group" style="display:none; margin-bottom: 24px;">
-            <div class="checkout-section-title">📸 Sube tu Comprobante</div>
-            <div class="screenshot-upload" id="screenshot-upload" onclick="document.getElementById('payment-screenshot').click()">
-              <input type="file" id="payment-screenshot" accept="image/*" style="display:none;" onchange="previewScreenshot(this)">
-              <div class="screenshot-preview" id="screenshot-preview">
-                <div class="screenshot-placeholder">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                  <span>Toca para subir captura</span>
-                  <span class="screenshot-hint">JPG, PNG — Máx 5MB</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="checkout-section-title">👤 Datos de Contacto</div>
           <div style="margin-bottom: 24px;">
             ${(typeof currentUser !== 'undefined' && currentUser) ? `
@@ -1432,6 +1600,20 @@ function renderPaymentModalHTML(product, pkg, isWalletRecharge = false) {
           <div style="display:flex; gap:10px; width:100%; margin-bottom: 24px;">
             <input type="text" id="discount-input" placeholder="INGRESA TU CÓDIGO" class="mockup-input" style="flex:1; text-transform: uppercase; border-color: rgba(255,255,255,0.1);" autocomplete="off">
             <button class="btn-primary" type="button" onclick="applyDiscount()" style="width: auto; padding: 0 20px; flex-shrink: 0; min-height: 48px; margin: 0;">Aplicar</button>
+          </div>
+
+          <div id="checkout-screenshot-group" style="display:none; margin-bottom: 24px;">
+            <div class="checkout-section-title">📸 Sube tu Comprobante</div>
+            <div class="screenshot-upload" id="screenshot-upload" onclick="document.getElementById('payment-screenshot').click()">
+              <input type="file" id="payment-screenshot" accept="image/*" style="display:none;" onchange="previewScreenshot(this)">
+              <div class="screenshot-preview" id="screenshot-preview">
+                <div class="screenshot-placeholder">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                  <span>Toca para subir captura</span>
+                  <span class="screenshot-hint">JPG, PNG — Máx 5MB</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="checkout-summary-bar">
