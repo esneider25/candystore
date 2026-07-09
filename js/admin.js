@@ -1524,33 +1524,47 @@ function addPaymentMethod() {
         </select>
       </div>
       
-      <div class="admin-form-group" style="margin-top: 20px;">
-        <label class="admin-form-label" style="margin-bottom: 12px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
-          Tus Datos (Lo que verá el cliente para pagarte)
-        </label>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Escribe los datos de tu cuenta bancaria o billetera. Un dato por línea.</p>
-        <textarea id="new-pm-details" class="admin-form-input" rows="4" placeholder="Correo: admin@zinli.com&#10;Titular: Juan Perez" style="resize: vertical;"></textarea>
-      </div>
+
       
-      <div class="admin-form-group" style="margin-top: 20px;">
-        <label class="admin-form-label" style="margin-bottom: 12px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
-          ¿Qué datos le pedirás al cliente para confirmar su pago?
+      <div class="admin-form-group" style="margin-top: 24px;">
+        <label class="admin-form-label" style="margin-bottom: 12px; font-size: 1rem; color: var(--accent);">
+          Datos Solicitados <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">(Para confirmar el pago)</span>
         </label>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" class="new-pm-field-cb" value="referencia" checked> Nro. de Referencia
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: rgba(0,0,0,0.15); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; background: rgba(255,255,255,0.02); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'">
+            <div class="admin-toggle">
+              <input type="checkbox" class="new-pm-field-cb" value="referencia" checked>
+              <span class="admin-toggle-slider"></span>
+            </div>
+            <span style="font-size: 0.9rem; font-weight: 500;">Nro. de Referencia</span>
           </label>
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" class="new-pm-field-cb" value="email"> Correo (Zinli/Binance)
+          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; background: rgba(255,255,255,0.02); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'">
+            <div class="admin-toggle">
+              <input type="checkbox" class="new-pm-field-cb" value="email">
+              <span class="admin-toggle-slider"></span>
+            </div>
+            <span style="font-size: 0.9rem; font-weight: 500;">Correo (Zinli/Binance)</span>
           </label>
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" class="new-pm-field-cb" value="telefono"> Teléfono (Pago Móvil)
+          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; background: rgba(255,255,255,0.02); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'">
+            <div class="admin-toggle">
+              <input type="checkbox" class="new-pm-field-cb" value="telefono">
+              <span class="admin-toggle-slider"></span>
+            </div>
+            <span style="font-size: 0.9rem; font-weight: 500;">Teléfono (Pago Móvil)</span>
           </label>
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" class="new-pm-field-cb" value="cedula"> Cédula / RIF
+          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; background: rgba(255,255,255,0.02); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'">
+            <div class="admin-toggle">
+              <input type="checkbox" class="new-pm-field-cb" value="cedula">
+              <span class="admin-toggle-slider"></span>
+            </div>
+            <span style="font-size: 0.9rem; font-weight: 500;">Cédula / RIF</span>
           </label>
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" class="new-pm-field-cb" value="nota"> Nota / Mensaje
+          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; background: rgba(255,255,255,0.02); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'">
+            <div class="admin-toggle">
+              <input type="checkbox" class="new-pm-field-cb" value="nota">
+              <span class="admin-toggle-slider"></span>
+            </div>
+            <span style="font-size: 0.9rem; font-weight: 500;">Nota / Mensaje</span>
           </label>
         </div>
       </div>
@@ -1578,7 +1592,7 @@ function saveNewPaymentMethod() {
   }
 
   const id = 'pm-' + Date.now();
-  const details = document.getElementById('new-pm-details').value.trim();
+  const details = '';
 
   if (!Array.isArray(PAYMENT_METHODS)) PAYMENT_METHODS = [];
 
