@@ -446,16 +446,69 @@ function showPaymentFlow() {
   }, 100);
 }
 
+function openPaymentModal() {
+  const product = PRODUCTS.find(g => g.id === appState.selectedProductId);
+  const pkg = appState.selectedPackageIndex !== null ? product?.packages[appState.selectedPackageIndex] : null;
+  const isWalletRecharge = appState.currentView === 'wallet-recharge';
+
+  if (!isWalletRecharge) {
+    if (!product || !pkg) {
+      showToast('⚠️ Selecciona un paquete primero');
+      return;
+    }
+    const productType = product.type || 'game-id';
+    if (productType === 'game-id') {
+      const uidInput = document.getElementById('game-uid');
+      if (!uidInput || !uidInput.value.trim()) {
+        showToast('⚠️ Ingresa tu ID del juego');
+        uidInput?.focus();
+        return;
+      }
+    } else if (productType === 'account') {
+      const emailInput = document.getElementById('account-email');
+      const passInput = document.getElementById('account-password');
+      if (!emailInput || !emailInput.value.trim()) {
+        showToast('⚠️ Ingresa el correo de la cuenta');
+        return;
+      }
+      if (!passInput || !passInput.value.trim()) {
+        showToast('⚠️ Ingresa la contraseña');
+        return;
+      }
+    }
+  } else {
+    if (appState.selectedPackageIndex === null) {
+      showToast('⚠️ Selecciona el monto a recargar');
+      return;
+    }
+  }
+
+  // Generate modal HTML
+  const modalHtml = renderPaymentModalHTML(product, pkg, isWalletRecharge);
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+  // Show it with a slight delay for transition
+  requestAnimationFrame(() => {
+    document.getElementById('checkout-modal-overlay').classList.add('active');
+  });
+}
+
+function closePaymentModal() {
+  const overlay = document.getElementById('checkout-modal-overlay');
+  if (overlay) {
+    overlay.classList.remove('active');
+    setTimeout(() => overlay.remove(), 400); // Wait for transition
+  }
+}
+
 function selectPayment(methodId) {
   appState.selectedPaymentId = methodId;
-  document.querySelectorAll('.payment-option, .mockup-payment-option').forEach(opt => opt.classList.remove('selected'));
-  const selected = document.getElementById(`pay-${methodId}`);
+  document.querySelectorAll('.checkout-payment-option').forEach(opt => opt.classList.remove('selected'));
+  const selected = document.getElementById(`checkout-pay-${methodId}`);
   if (selected) selected.classList.add('selected');
-  const container = document.getElementById('payment-details-container');
-  const screenshotGroup = document.getElementById('screenshot-group');
-  
-  const contactDiscountContainer = document.getElementById('contact-discount-container');
-  if (contactDiscountContainer) contactDiscountContainer.style.display = 'block';
+
+  const container = document.getElementById('checkout-payment-details-container');
+  const screenshotGroup = document.getElementById('checkout-screenshot-group');
   
   if (methodId === 'wallet') {
     if (container) container.innerHTML = `
@@ -467,9 +520,26 @@ function selectPayment(methodId) {
       </div>`;
     if (screenshotGroup) screenshotGroup.style.display = 'none';
   } else {
-    if (container) container.innerHTML = renderPaymentDetails(methodId);
+    if (container) {
+      // Use standard renderPaymentDetails but wrap in fade-in
+      container.innerHTML = `<div class="fade-in-up">${renderPaymentDetails(methodId)}</div>`;
+    }
     if (screenshotGroup) screenshotGroup.style.display = 'block';
   }
+  
+  // Show Step 2 if it was hidden
+  const step2 = document.getElementById('checkout-step-2');
+  if (step2 && !step2.classList.contains('active')) {
+    step2.classList.add('active');
+    // Scroll modal to bottom smoothly
+    const modal = document.querySelector('.checkout-modal');
+    if (modal) {
+      setTimeout(() => {
+        modal.scrollTo({ top: modal.scrollHeight, behavior: 'smooth' });
+      }, 100);
+    }
+  }
+
   updateOrderSummary();
 }
 
@@ -520,44 +590,46 @@ function updateOrderSummary() {
   } else {
     method = PAYMENT_METHODS.find(m => m.id === appState.selectedPaymentId);
   }
-  const summary = document.getElementById('order-summary');
+
+  const priceEl = document.getElementById('checkout-total-price');
+  const discountInfoEl = document.getElementById('checkout-discount-info');
+  const discountValEl = document.getElementById('checkout-discount-val');
   const btn = document.getElementById('btn-submit');
   
+  if (!priceEl) return; // Modal might not be open
+
+  let amount = 0;
   if (appState.currentView === 'wallet-recharge') {
-    const amount = appState.selectedPackageIndex;
-    if (amount && method) {
-      const bs = usdToBs(amount);
-      const isUsd = method.currency === 'usd';
-      const totalHtml = isUsd 
-        ? `<div class="order-summary-row total" style="color: #0ea5e9;"><span>Total a pagar (USD)</span><span>$${amount.toFixed(2)} USD</span></div>`
-        : `<div class="order-summary-row total"><span>Total a pagar (Bs.)</span><span>Bs. ${formatBs(bs)}</span></div>`;
-      
-      summary.innerHTML = `
-        <h4>Resumen de la Recarga</h4>
-        <div class="order-summary-row"><span>Producto</span><span>Recarga de Monedero</span></div>
-        <div class="order-summary-row"><span>Monto</span><span>$${amount.toFixed(2)}</span></div>
-        <div class="order-summary-row"><span>Método de pago</span><span>${method.name}</span></div>
-        ${totalHtml}
-      `;
-      summary.style.display = 'block';
-      if(btn) btn.disabled = false;
-    } else {
-      summary.innerHTML = '';
-      if(btn) btn.disabled = false;
-    }
-    return;
+    amount = appState.selectedPackageIndex || 0;
+  } else {
+    const product = PRODUCTS.find(g => g.id === appState.selectedProductId);
+    const pkg = appState.selectedPackageIndex !== null ? product?.packages[appState.selectedPackageIndex] : null;
+    amount = pkg ? pkg.priceUsd : 0;
   }
 
-  const product = PRODUCTS.find(g => g.id === appState.selectedProductId);
-  const pkg = appState.selectedPackageIndex !== null ? product?.packages[appState.selectedPackageIndex] : null;
-  if (product && pkg && method) {
-    summary.innerHTML = renderOrderSummary(product, pkg, method, appState.appliedDiscount);
-    summary.style.display = 'block';
-    if(btn) btn.disabled = false;
+  // Calculate discount
+  const discountAmount = calculateDiscountAmount(amount, appState.appliedDiscount);
+  const finalAmount = amount - discountAmount;
+
+  if (method && method.currency === 'bs') {
+    const bs = usdToBs(finalAmount);
+    priceEl.innerText = `Bs. ${formatBs(bs)}`;
   } else {
-    summary.innerHTML = '';
-    if(btn) btn.disabled = false;
+    priceEl.innerText = `$${finalAmount.toFixed(2)}`;
   }
+
+  if (discountAmount > 0) {
+    if (discountInfoEl) discountInfoEl.style.display = 'block';
+    if (method && method.currency === 'bs') {
+      if (discountValEl) discountValEl.innerText = `-Bs. ${formatBs(usdToBs(discountAmount))}`;
+    } else {
+      if (discountValEl) discountValEl.innerText = `-$${discountAmount.toFixed(2)}`;
+    }
+  } else {
+    if (discountInfoEl) discountInfoEl.style.display = 'none';
+  }
+
+  if(btn) btn.disabled = false;
 }
 
 // -- Submit Order — Creates real order + redirects to tracking --
@@ -1088,6 +1160,7 @@ function submitWalletRecharge() {
 }
 
 function showOrderConfirmation(order) {
+  if (typeof closePaymentModal === 'function') closePaymentModal();
   const modalContainer = document.createElement('div');
   modalContainer.id = 'modal-container';
   modalContainer.innerHTML = `

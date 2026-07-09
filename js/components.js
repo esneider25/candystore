@@ -174,78 +174,11 @@ function renderMockupDashboard() {
           </div>
         </div>
 
-        <!-- Paso 3: Método de Pago -->
-        <div style="margin-bottom: 32px;">
-          <h3 class="mockup-step-title">
-            <span class="mockup-step-number">${inputsHtml ? '3' : '2'}</span> Método de Pago
-          </h3>
-          <div class="mockup-payment-grid" id="payment-methods">
-            ${paymentMethodsHtml}
-          </div>
-        </div>
-
-        <div id="contact-discount-container" style="display:none;">
-          <!-- Paso 4: Contacto -->
-          <div style="margin-bottom: 32px;">
-            <h3 class="mockup-step-title">
-              <span class="mockup-step-number">${inputsHtml ? '4' : '3'}</span> Datos de Contacto
-            </h3>
-            ${(typeof currentUser !== 'undefined' && currentUser) ? `
-              <input type="hidden" id="customer-contact" value="${currentUser.email || currentUser.displayName || ''}">
-              <div style="color: #4ade80; font-size: 0.9rem; padding: 10px; background: rgba(74, 222, 128, 0.1); border-radius: 8px;">
-                ✅ Sesión iniciada como: ${currentUser.email || currentUser.displayName}
-              </div>
-            ` : `
-            <div style="display:flex; gap:10px; width:100%;">
-              <div class="mockup-input-group" style="flex:1;">
-                <input type="text" id="customer-phone" placeholder="WhatsApp / Teléfono" class="mockup-input" autocomplete="off">
-              </div>
-              <div class="mockup-input-group" style="flex:1;">
-                <input type="email" id="customer-email" placeholder="Correo Electrónico" class="mockup-input" autocomplete="off">
-              </div>
-            </div>
-            <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 6px;">Te contactaremos para notificarte sobre tu pedido</div>
-            `}
-          </div>
-
-          <!-- Paso 5: Descuento -->
-          <div style="margin-bottom: 32px;">
-            <h3 class="mockup-step-title">
-              <span class="mockup-step-number">${inputsHtml ? '5' : '4'}</span> Código de Descuento
-            </h3>
-            <div style="display:flex; gap:10px; width:100%; align-items: stretch;">
-              <div class="mockup-input-group" style="flex:1;">
-                <input type="text" id="discount-input" placeholder="INGRESA TU CÓDIGO" class="mockup-input" style="text-transform: uppercase;" autocomplete="off">
-              </div>
-              <button type="button" class="mockup-btn" onclick="applyDiscount()" style="padding:0 20px; min-width:100px;">
-                Aplicar
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Screenshot (Hidden by default, shown based on payment selection in app.js) -->
-        <div id="payment-details-container"></div>
         <div class="order-summary" id="order-summary" style="margin-top: 20px; margin-bottom: 20px; display:none; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px;"></div>
-        <div id="screenshot-group" style="display:none; margin-bottom: 32px;">
-          <h3 class="mockup-step-title">
-            <span class="mockup-step-number">📸</span> Comprobante
-          </h3>
-          <div class="screenshot-upload" id="screenshot-upload" onclick="document.getElementById('payment-screenshot').click()">
-            <input type="file" id="payment-screenshot" accept="image/*" style="display:none;" onchange="previewScreenshot(this)">
-            <div class="screenshot-preview" id="screenshot-preview">
-              <div class="screenshot-placeholder">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                <span>Toca para subir captura</span>
-                <span class="screenshot-hint">JPG, PNG — Máx 5MB</span>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <!-- Botón de Confirmación -->
-        <button class="mockup-btn-large" id="btn-submit" onclick="if(appState.selectedPackageIndex !== null) { appState.selectedProductId = '${selectedProduct.id}'; submitOrder(); } else { showToast('⚠️ Selecciona un paquete primero'); }">
-          CONFIRMAR PEDIDO
+        <button class="mockup-btn-large" id="btn-buy-now" onclick="if(appState.selectedPackageIndex !== null) { appState.selectedProductId = '${selectedProduct.id}'; openPaymentModal(); } else { showToast('⚠️ Selecciona un paquete primero'); }">
+          COMPRAR AHORA
         </button>
       </section>
     `;
@@ -1441,3 +1374,95 @@ window.fillSavedId = function(uid, zoneId) {
     zoneInput.dispatchEvent(new Event('input', { bubbles: true }));
   }
 };
+
+function renderPaymentModalHTML(product, pkg, isWalletRecharge = false) {
+  const paymentMethodsHtml = PAYMENT_METHODS.map(pm => `
+    <div class="checkout-payment-option" onclick="selectPayment('${pm.id}')" id="checkout-pay-${pm.id}">
+      <div class="checkout-payment-icon">${pm.icon || '💸'}</div>
+      <div class="checkout-payment-name">${pm.name}</div>
+    </div>
+  `).join('');
+
+  const amountUsd = isWalletRecharge ? appState.selectedPackageIndex : pkg?.priceUsd;
+
+  return `
+    <div class="checkout-modal-overlay" id="checkout-modal-overlay">
+      <div class="checkout-modal">
+        <div class="checkout-modal-header">
+          <div class="checkout-modal-title">
+            <span>🛒</span> Completar Pago
+          </div>
+          <button class="checkout-close-btn" onclick="closePaymentModal()">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <!-- Step 1: Payment Methods -->
+        <div class="checkout-step active" id="checkout-step-1">
+          <div class="checkout-section-title">1. Elige tu método de pago</div>
+          <div class="checkout-payment-grid">
+            ${paymentMethodsHtml}
+          </div>
+        </div>
+
+        <!-- Step 2: Payment Details & Form (Hidden until payment method selected) -->
+        <div class="checkout-step" id="checkout-step-2">
+          <div class="checkout-section-title">2. Instrucciones de Pago</div>
+          <div id="checkout-payment-details-container"></div>
+          
+          <div id="checkout-screenshot-group" style="display:none; margin-bottom: 24px;">
+            <div class="checkout-section-title">📸 Sube tu Comprobante</div>
+            <div class="screenshot-upload" id="screenshot-upload" onclick="document.getElementById('payment-screenshot').click()">
+              <input type="file" id="payment-screenshot" accept="image/*" style="display:none;" onchange="previewScreenshot(this)">
+              <div class="screenshot-preview" id="screenshot-preview">
+                <div class="screenshot-placeholder">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                  <span>Toca para subir captura</span>
+                  <span class="screenshot-hint">JPG, PNG — Máx 5MB</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="checkout-section-title">👤 Datos de Contacto</div>
+          <div style="margin-bottom: 24px;">
+            ${(typeof currentUser !== 'undefined' && currentUser) ? `
+              <input type="hidden" id="customer-contact" value="${currentUser.email || currentUser.displayName || ''}">
+              <div style="color: #4ade80; font-size: 0.9rem; padding: 12px; background: rgba(74, 222, 128, 0.1); border-radius: 8px; display:flex; align-items:center; gap:8px;">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM224,128A96,96,0,1,1,128,32,96.11,96.11,0,0,1,224,128Zm-16,0a80,80,0,1,0-80,80A80.09,80.09,0,0,0,208,128Z"></path></svg>
+                Sesión iniciada: ${currentUser.email || currentUser.displayName}
+              </div>
+            ` : `
+            <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
+              <input type="text" id="customer-phone" placeholder="WhatsApp / Teléfono" class="admin-form-input" autocomplete="off" style="border-color: rgba(255,255,255,0.1);">
+              <input type="email" id="customer-email" placeholder="Correo Electrónico" class="admin-form-input" autocomplete="off" style="border-color: rgba(255,255,255,0.1);">
+            </div>
+            <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 8px;">Te contactaremos para notificarte sobre tu pedido</div>
+            `}
+          </div>
+
+          <div class="checkout-section-title">🎟️ Código de Descuento</div>
+          <div style="display:flex; gap:10px; width:100%; margin-bottom: 24px;">
+            <input type="text" id="discount-input" placeholder="INGRESA TU CÓDIGO" class="admin-form-input" style="flex:1; text-transform: uppercase; border-color: rgba(255,255,255,0.1);" autocomplete="off">
+            <button type="button" class="btn btn-secondary" onclick="applyDiscount()" style="padding:0 20px;">Aplicar</button>
+          </div>
+
+          <div class="checkout-summary-bar">
+            <div>
+              <div style="font-size: 0.85rem; color: var(--text-muted);">Total a pagar</div>
+              <div class="checkout-summary-price" id="checkout-total-price">$${amountUsd ? parseFloat(amountUsd).toFixed(2) : '0.00'}</div>
+            </div>
+            <div style="text-align: right; display:none;" id="checkout-discount-info">
+              <div style="font-size: 0.85rem; color: #facc15;">Descuento aplicado</div>
+              <div style="font-size: 1rem; color: #facc15; font-weight: 700;" id="checkout-discount-val">-$0.00</div>
+            </div>
+          </div>
+
+          <button class="checkout-action-btn" id="btn-submit" onclick="submitOrder()">
+            ENVIAR PEDIDO
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
