@@ -65,7 +65,7 @@ function initAdminApp() {
       <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-deep);">
         <div class="tracking-spinner" style="font-size: 3rem;">🤖</div>
         <h2 style="margin-top: 20px; color: var(--accent);">Conectando con la base de datos...</h2>
-        <div id="diagnostic-info" style="margin-top: 20px; color: #ffb74d; font-family: monospace; text-align: center; max-width: 80%;">
+        <div id="diagnostic-info" style="margin-top: 20px; color: #ff007f; font-family: monospace; text-align: center; max-width: 80%;">
           Comprobando estado...
         </div>
         <button onclick="location.reload(true)" style="margin-top: 20px; padding: 8px 16px; background: #333; color: white; border: none; border-radius: 4px; cursor: pointer;">Forzar Recarga</button>
@@ -533,7 +533,7 @@ function renderDashboard(container, forcedOrders = null) {
     <div class="admin-stats-grid" style="margin-bottom: 24px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
       <div class="admin-stat-card" style="cursor: pointer;" onclick="switchTab('orders')">
         <div class="admin-stat-icon">📋</div>
-        <div class="admin-stat-value" style="color: #ffb74d;">${pendingCount}</div>
+        <div class="admin-stat-value" style="color: #ff007f;">${pendingCount}</div>
         <div class="admin-stat-label">Pendientes</div>
       </div>
       <div class="admin-stat-card" onclick="switchTab('orders')" style="cursor: pointer;">
@@ -652,8 +652,8 @@ function renderDashboard(container, forcedOrders = null) {
             datasets: [{
               label: 'Pedidos Completados',
               data: Object.keys(salesByProduct).length > 0 ? Object.values(salesByProduct) : [0],
-              backgroundColor: 'rgba(0, 229, 195, 0.6)',
-              borderColor: 'rgba(0, 229, 195, 1)',
+              backgroundColor: 'rgba(0, 210, 255, 0.6)',
+              borderColor: 'rgba(0, 210, 255, 1)',
               borderWidth: 1,
               borderRadius: 4
             }]
@@ -724,7 +724,7 @@ function renderDashboard(container, forcedOrders = null) {
             labels: Object.keys(pmCounts).length > 0 ? Object.keys(pmCounts) : ['Sin Datos'],
             datasets: [{
               data: Object.keys(pmCounts).length > 0 ? Object.values(pmCounts) : [1],
-              backgroundColor: ['#42a5f5', '#66bb6a', '#ffb74d', '#ef5350', '#ab47bc', '#26c6da'],
+              backgroundColor: ['#42a5f5', '#66bb6a', '#ff007f', '#ef5350', '#ab47bc', '#26c6da'],
               borderWidth: 0
             }]
           },
@@ -791,7 +791,7 @@ function renderDashboard(container, forcedOrders = null) {
                       <span class="admin-badge" style="${u.role === 'revendedor' ? 'background: rgba(168, 85, 247, 0.2); color: #d8b4fe;' :
               (u.role === 'influencer' ? 'background: rgba(239, 68, 68, 0.2); color: #f87171;' :
                 (u.role === 'admin' ? 'background: rgba(234, 179, 8, 0.2); color: #facc15;' :
-                  'background: rgba(0, 229, 195, 0.15); color: #0ea5e9;'))
+                  'background: rgba(0, 210, 255, 0.15); color: #0ea5e9;'))
             }">${(u.role === 'user' ? 'cliente' : u.role).toUpperCase()}</span>
                     </td>
                     <td style="padding: 12px 10px; text-align: right; font-weight: bold; color: #42a5f5;">$${u.spent.toFixed(2)}</td>
@@ -3223,7 +3223,7 @@ function updateAdminMessagesUI() {
       const isUnread = conv.hasUnreadAdmin;
       const unreadBadge = isUnread ? '<span style="background:var(--error); width:10px; height:10px; border-radius:50%; display:inline-block; margin-left:10px;"></span>' : '';
       const lastMsg = (conv.messages && conv.messages.length > 0) ? conv.messages[conv.messages.length - 1].text : '';
-      const selectedStr = (currentChatSessionId === conv.sessionId) ? 'background: rgba(0, 229, 195, 0.1); border-left: 3px solid var(--accent);' : 'background: var(--bg-deep); border-left: 3px solid transparent;';
+      const selectedStr = (currentChatSessionId === conv.sessionId) ? 'background: rgba(0, 210, 255, 0.1); border-left: 3px solid var(--accent);' : 'background: var(--bg-deep); border-left: 3px solid transparent;';
 
       const contactLabel = conv.contact || `Anónimo (${conv.sessionId.substring(0, 8)})`;
       listHtml += `

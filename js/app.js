@@ -125,13 +125,13 @@ function showAnnouncementModal(message) {
   modalContainer.id = 'announcement-modal-container';
   modalContainer.innerHTML = `
     <div class="modal-overlay active" style="z-index: 9999; backdrop-filter: blur(5px);">
-      <div class="modal payment-flow-modal" style="text-align: center; max-width: 500px; border: 1px solid rgba(0, 229, 195, 0.3); background: var(--bg-card); padding: 35px 25px;">
-        <div style="font-size: 3.5rem; margin-bottom: 15px; text-shadow: 0 0 15px rgba(0, 229, 195, 0.4);">??</div>
+      <div class="modal payment-flow-modal" style="text-align: center; max-width: 500px; border: 1px solid rgba(0, 210, 255, 0.3); background: var(--bg-card); padding: 35px 25px;">
+        <div style="font-size: 3.5rem; margin-bottom: 15px; text-shadow: 0 0 15px rgba(0, 210, 255, 0.4);">??</div>
         <h3 style="color: #0ea5e9; margin-bottom: 15px; font-size: 1.5rem;">Aviso Importante</h3>
         <div style="color: var(--text-secondary); margin-bottom: 30px; line-height: 1.6; font-size: 1.05rem; text-align: left; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
           ${message}
         </div>
-        <button id="announcement-modal-btn" class="btn-primary" style="width: 100%; padding: 14px; font-size: 1.1rem; border-radius: 12px; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 229, 195, 0.3);">
+        <button id="announcement-modal-btn" class="btn-primary" style="width: 100%; padding: 14px; font-size: 1.1rem; border-radius: 12px; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);">
           Entendido ??
         </button>
       </div>
@@ -827,16 +827,16 @@ async function _submitOrderLogic() {
       modalContainer.id = 'warning-modal-container';
       modalContainer.innerHTML = `
         <div class="modal-overlay active" style="z-index: 9999; backdrop-filter: blur(5px);">
-          <div class="modal payment-flow-modal" style="text-align: center; max-width: 420px; border: 1px solid rgba(255, 183, 77, 0.3); background: var(--bg-card); padding: 30px 24px;">
-            <div style="font-size: 3.5rem; margin-bottom: 10px; text-shadow: 0 0 15px rgba(255,183,77,0.4);">??</div>
-            <h3 style="color: #ffb74d; margin-bottom: 15px; font-size: 1.4rem;">Aviso Importante</h3>
+          <div class="modal payment-flow-modal" style="text-align: center; max-width: 420px; border: 1px solid rgba(255, 0, 127, 0.3); background: var(--bg-card); padding: 30px 24px;">
+            <div style="font-size: 3.5rem; margin-bottom: 10px; text-shadow: 0 0 15px rgba(255, 0, 127,0.4);">??</div>
+            <h3 style="color: #ff007f; margin-bottom: 15px; font-size: 1.4rem;">Aviso Importante</h3>
             <p style="color: var(--text-secondary); margin-bottom: 25px; line-height: 1.6; font-size: 1rem;">
               Tu orden está en proceso. Al presionar <b>Aceptar</b> comenzará el envío automático.<br><br>
               <span style="color: #ff6b6b; font-weight: 600; background: rgba(255,107,107,0.1); padding: 5px 10px; border-radius: 6px; display: inline-block; margin-top: 5px;">
                 Por favor, NO CIERRES NI ACTUALICES el navegador hasta terminar.
               </span>
             </p>
-            <button id="warning-modal-btn" class="btn-primary" style="width: 100%; padding: 14px; font-size: 1.05rem; border-radius: 12px; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 229, 195, 0.3);">
+            <button id="warning-modal-btn" class="btn-primary" style="width: 100%; padding: 14px; font-size: 1.05rem; border-radius: 12px; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);">
               Aceptar y Continuar ??
             </button>
           </div>
@@ -1216,12 +1216,12 @@ function showOrderConfirmation(order) {
             <h3 style="margin-top: 20px; margin-bottom: 10px;">¡Pedido Registrado!</h3>
             <p style="margin-bottom: 25px; color: var(--text-secondary);">Tu pedido ha sido registrado exitosamente. Por favor, guarda tu número de referencia.</p>
             
-            <div style="background: rgba(0, 229, 195, 0.05); border: 1px dashed rgba(0, 229, 195, 0.4); border-radius: var(--radius-md); padding: 20px; margin-bottom: 25px;">
+            <div style="background: rgba(0, 210, 255, 0.05); border: 1px dashed rgba(0, 210, 255, 0.4); border-radius: var(--radius-md); padding: 20px; margin-bottom: 25px;">
               <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 5px;">Código de Referencia</div>
-              <div style="font-family: 'Courier New', monospace; font-size: 1.6rem; font-weight: 800; color: var(--accent); letter-spacing: 2px; margin-bottom: 12px; text-shadow: 0 0 10px rgba(0,229,195,0.3);">
+              <div style="font-family: 'Courier New', monospace; font-size: 1.6rem; font-weight: 800; color: var(--accent); letter-spacing: 2px; margin-bottom: 12px; text-shadow: 0 0 10px rgba(0, 210, 255,0.3);">
                 ${order.id}
               </div>
-              <div style="display: inline-block; background: rgba(255, 183, 77, 0.1); border: 1px solid rgba(255, 183, 77, 0.3); color: #ffb74d; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">
+              <div style="display: inline-block; background: rgba(255, 0, 127, 0.1); border: 1px solid rgba(255, 0, 127, 0.3); color: #ff007f; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">
                 ? Pendiente de verificación
               </div>
             </div>
