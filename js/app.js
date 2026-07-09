@@ -454,6 +454,9 @@ function selectPayment(methodId) {
   const container = document.getElementById('payment-details-container');
   const screenshotGroup = document.getElementById('screenshot-group');
   
+  const contactDiscountContainer = document.getElementById('contact-discount-container');
+  if (contactDiscountContainer) contactDiscountContainer.style.display = 'block';
+  
   if (methodId === 'wallet') {
     if (container) container.innerHTML = `
       <div class="fade-in-up" style="background-color: #111827; border: 1px solid #374151; border-radius: 8px; padding: 20px; margin-top: 16px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">

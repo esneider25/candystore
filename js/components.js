@@ -174,51 +174,53 @@ function renderMockupDashboard() {
           </div>
         </div>
 
-        <!-- Paso 3: Contacto -->
+        <!-- Paso 3: Método de Pago -->
         <div style="margin-bottom: 32px;">
           <h3 class="mockup-step-title">
-            <span class="mockup-step-number">${inputsHtml ? '3' : '2'}</span> Datos de Contacto
-          </h3>
-          ${(typeof currentUser !== 'undefined' && currentUser) ? `
-            <input type="hidden" id="customer-contact" value="${currentUser.email || currentUser.displayName || ''}">
-            <div style="color: #4ade80; font-size: 0.9rem; padding: 10px; background: rgba(74, 222, 128, 0.1); border-radius: 8px;">
-              ✅ Sesión iniciada como: ${currentUser.email || currentUser.displayName}
-            </div>
-          ` : `
-          <div style="display:flex; gap:10px; width:100%;">
-            <div class="mockup-input-group" style="flex:1;">
-              <input type="text" id="customer-phone" placeholder="WhatsApp / Teléfono" class="mockup-input" autocomplete="off">
-            </div>
-            <div class="mockup-input-group" style="flex:1;">
-              <input type="email" id="customer-email" placeholder="Correo Electrónico" class="mockup-input" autocomplete="off">
-            </div>
-          </div>
-          <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 6px;">Te contactaremos para notificarte sobre tu pedido</div>
-          `}
-        </div>
-
-        <!-- Paso 4: Descuento -->
-        <div style="margin-bottom: 32px;">
-          <h3 class="mockup-step-title">
-            <span class="mockup-step-number">${inputsHtml ? '4' : '3'}</span> Código de Descuento
-          </h3>
-          <div style="display:flex; gap:10px; width:100%; align-items: stretch;">
-            <div class="mockup-input-group" style="flex:1;">
-              <input type="text" id="discount-input" placeholder="INGRESA TU CÓDIGO" class="mockup-input" style="text-transform: uppercase;" autocomplete="off">
-            </div>
-            <button type="button" class="mockup-btn" onclick="applyDiscount()" style="padding:0 20px; min-width:100px;">
-              Aplicar
-            </button>
-          </div>
-        </div>
-
-        <!-- Paso 5: Método de Pago -->
-        <div style="margin-bottom: 32px;">
-          <h3 class="mockup-step-title">
-            <span class="mockup-step-number">${inputsHtml ? '5' : '4'}</span> Método de Pago
+            <span class="mockup-step-number">${inputsHtml ? '3' : '2'}</span> Método de Pago
           </h3>
           <div class="mockup-payment-grid" id="payment-methods">
             ${paymentMethodsHtml}
+          </div>
+        </div>
+
+        <div id="contact-discount-container" style="display:none;">
+          <!-- Paso 4: Contacto -->
+          <div style="margin-bottom: 32px;">
+            <h3 class="mockup-step-title">
+              <span class="mockup-step-number">${inputsHtml ? '4' : '3'}</span> Datos de Contacto
+            </h3>
+            ${(typeof currentUser !== 'undefined' && currentUser) ? `
+              <input type="hidden" id="customer-contact" value="${currentUser.email || currentUser.displayName || ''}">
+              <div style="color: #4ade80; font-size: 0.9rem; padding: 10px; background: rgba(74, 222, 128, 0.1); border-radius: 8px;">
+                ✅ Sesión iniciada como: ${currentUser.email || currentUser.displayName}
+              </div>
+            ` : `
+            <div style="display:flex; gap:10px; width:100%;">
+              <div class="mockup-input-group" style="flex:1;">
+                <input type="text" id="customer-phone" placeholder="WhatsApp / Teléfono" class="mockup-input" autocomplete="off">
+              </div>
+              <div class="mockup-input-group" style="flex:1;">
+                <input type="email" id="customer-email" placeholder="Correo Electrónico" class="mockup-input" autocomplete="off">
+              </div>
+            </div>
+            <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 6px;">Te contactaremos para notificarte sobre tu pedido</div>
+            `}
+          </div>
+
+          <!-- Paso 5: Descuento -->
+          <div style="margin-bottom: 32px;">
+            <h3 class="mockup-step-title">
+              <span class="mockup-step-number">${inputsHtml ? '5' : '4'}</span> Código de Descuento
+            </h3>
+            <div style="display:flex; gap:10px; width:100%; align-items: stretch;">
+              <div class="mockup-input-group" style="flex:1;">
+                <input type="text" id="discount-input" placeholder="INGRESA TU CÓDIGO" class="mockup-input" style="text-transform: uppercase;" autocomplete="off">
+              </div>
+              <button type="button" class="mockup-btn" onclick="applyDiscount()" style="padding:0 20px; min-width:100px;">
+                Aplicar
+              </button>
+            </div>
           </div>
         </div>
 
