@@ -1400,11 +1400,9 @@ function sendUserChatMessage() {
     // Notify Telegram using global TELEGRAM_CONFIG
     if (typeof TELEGRAM_CONFIG !== 'undefined' && TELEGRAM_CONFIG.enabled && TELEGRAM_CONFIG.botToken && TELEGRAM_CONFIG.chatId) {
       const tgMsg = `💬 <b>Nuevo Mensaje de Soporte (Usuario Registrado)</b>\n\n<b>Contacto:</b> ${contactName}\n<b>Mensaje:</b> ${text}\n\n<i>Responde desde el Panel Admin</i>`;
-      fetch('/api/telegram', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'message', botToken: TELEGRAM_CONFIG.botToken, chatId: TELEGRAM_CONFIG.chatId, text: tgMsg })
-      }).catch(e => console.error('Telegram error', e));
+      if (typeof sendTelegramMessage === 'function') {
+        sendTelegramMessage(tgMsg).catch(e => console.error('Telegram error', e));
+      }
     }
   }
 }

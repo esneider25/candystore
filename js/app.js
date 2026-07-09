@@ -1598,13 +1598,11 @@ async function sendSupportMessage() {
   
   // Notify Telegram using global TELEGRAM_CONFIG
   if (typeof TELEGRAM_CONFIG !== 'undefined' && TELEGRAM_CONFIG.enabled && TELEGRAM_CONFIG.botToken && TELEGRAM_CONFIG.chatId) {
-    const tgMsg = `?? <b>Nuevo Mensaje de Soporte</b>\n\n<b>Contacto:</b> ${contact}\n<b>Mensaje:</b> ${text}\n\n<i>Responde desde el Panel Admin</i>`;
+    const tgMsg = `💬 <b>Nuevo Mensaje de Soporte</b>\n\n<b>Contacto:</b> ${contact}\n<b>Mensaje:</b> ${text}\n\n<i>Responde desde el Panel Admin</i>`;
     try {
-      await fetch('/api/telegram', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'message', botToken: TELEGRAM_CONFIG.botToken, chatId: TELEGRAM_CONFIG.chatId, text: tgMsg })
-      });
+      if (typeof sendTelegramMessage === 'function') {
+        sendTelegramMessage(tgMsg);
+      }
     } catch(e) { console.error('Telegram error', e); }
   }
 
@@ -1779,84 +1777,32 @@ async function triggerTelegramNotification(order) {
     }
   }
 
-  // -- Step 2: Prepare screenshot base64 for server (if available) --
-  let screenshotBase64 = null;
-  if (appState.selectedScreenshot) {
-    try {
-      const compressedBlob = await compressFileToBlob(appState.selectedScreenshot);
-      screenshotBase64 = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = () => resolve(null);
-        reader.readAsDataURL(compressedBlob);
-      });
-    } catch (e) {
-      console.warn('Error compressing screenshot for server, sending without image:', e);
-    }
-  }
+  // -- Step 2: Build Telegram message --
+  const tgMsg = typeof buildOrderTelegramMessage === 'function'
+    ? buildOrderTelegramMessage(order)
+    : `🤖 <b>NUEVO PEDIDO — ${order.id}</b>\n🔥 ${order.productName} (${order.packageLabel})\n💰 $${order.priceUsd} USD`;
 
-  // -- Step 3: Fire-and-forget POST to server endpoint --
-  // The SERVER handles Telegram delivery with retries — no dependency on client
-  const payload = JSON.stringify({
-    order: {
-      id: order.id,
-      playerName: order.playerName,
-      gameId: order.gameId,
-      accountEmail: order.accountEmail,
-      productName: order.productName,
-      packageLabel: order.packageLabel,
-      priceUsd: order.priceUsd,
-      priceBs: order.priceBs,
-      discountCode: order.discountCode,
-      discountValue: order.discountValue,
-      discountType: order.discountType,
-      ocrNumbers: order.ocrNumbers,
-      paymentMethodName: order.paymentMethodName,
-      customerContact: order.customerContact,
-      customerPaymentDetails: order.customerPaymentDetails
-    },
-    screenshotBase64: screenshotBase64,
-    siteOrigin: window.location.origin,
-    botToken: typeof TELEGRAM_CONFIG !== 'undefined' ? TELEGRAM_CONFIG.botToken : null,
-    chatId: typeof TELEGRAM_CONFIG !== 'undefined' ? TELEGRAM_CONFIG.chatId : null
-  });
+  const keyboard = typeof buildOrderKeyboard === 'function'
+    ? buildOrderKeyboard(order.id)
+    : null;
 
-  // Use sendBeacon for reliability (survives page close), with normal fetch as fallback for large payloads
+  // -- Step 3: Send directly via Telegram Bot API --
   try {
-    const blobPayload = new Blob([payload], { type: 'application/json' });
-    let sent = false;
-    
-    // navigator.sendBeacon and fetch keepalive=true have a ~64KB limit.
-    // Payloads with screenshots easily exceed this limit.
-    if (blobPayload.size < 60000) {
-      sent = navigator.sendBeacon('/api/notify-order', blobPayload);
-      if (!sent) {
-        fetch('/api/notify-order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: payload,
-          keepalive: true
-        }).catch(() => {});
-        sent = true;
-      }
-    }
-
-    if (!sent) {
-      // For larger payloads (>64KB), we MUST use normal fetch without keepalive
-      fetch('/api/notify-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: payload
-      }).catch(() => {});
+    if (appState.selectedScreenshot && TELEGRAM_CONFIG.notifyWithPhoto) {
+      // Compress and send as photo with caption
+      const compressedBlob = await compressFileToBlob(appState.selectedScreenshot);
+      await sendTelegramPhoto(compressedBlob, tgMsg, keyboard);
+    } else {
+      // Send text-only message
+      await sendTelegramMessage(tgMsg, keyboard);
     }
   } catch (e) {
-    // Last resort fallback
-    fetch('/api/notify-order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: payload,
-      keepalive: true
-    }).catch(() => {});
+    console.warn('Telegram notification error, sending text fallback:', e);
+    try {
+      await sendTelegramMessage(tgMsg, keyboard);
+    } catch (e2) {
+      console.warn('Telegram text fallback also failed:', e2);
+    }
   }
   
   appState.selectedScreenshot = null;
@@ -1959,8 +1905,8 @@ window.verifyGameId = async function(productId) {
       }
     }
 
-    // Usar proxy CORS público ya que no hay un backend de NodeJS (/api/proxy)
-    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(bUrl);
+    // Usar nuestro proxy backend alojado en Vercel
+    const proxyUrl = '/api/proxy?url=' + encodeURIComponent(bUrl);
     
     let fetchOptions = {
       method: finalMethod,
@@ -1985,12 +1931,8 @@ window.verifyGameId = async function(productId) {
     try {
       response = await fetch(proxyUrl, fetchOptions);
     } catch (e) {
-      // Fallback a allorigins si corsproxy.io falla (solo sirve para GET)
-      if (finalMethod === 'GET') {
-         response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(bUrl)}`);
-      } else {
-         throw e;
-      }
+      console.error("Error al contactar al proxy local:", e);
+      throw e;
     }
 
     let data;
