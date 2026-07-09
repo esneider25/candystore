@@ -543,7 +543,7 @@ function updateOrderSummary() {
       if(btn) btn.disabled = false;
     } else {
       summary.innerHTML = '';
-      if(btn) btn.disabled = true;
+      if(btn) btn.disabled = false;
     }
     return;
   }
@@ -556,7 +556,7 @@ function updateOrderSummary() {
     if(btn) btn.disabled = false;
   } else {
     summary.innerHTML = '';
-    if(btn) btn.disabled = true;
+    if(btn) btn.disabled = false;
   }
 }
 
