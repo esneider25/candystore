@@ -1335,8 +1335,8 @@ async function lookupOrder() {
   
   let orderIdToTrack = null;
   if (/^\d{1,6}$/.test(val)) {
-    orderIdToTrack = 'AP-' + val;
-  } else if (/^AP-\d{1,6}$/i.test(val)) {
+    orderIdToTrack = 'CS-' + val;
+  } else if (/^CS-\d{1,6}$/i.test(val)) {
     orderIdToTrack = val.toUpperCase();
   }
 
@@ -1359,7 +1359,7 @@ async function lookupOrder() {
         }
         navigateTo('tracking', orderData.id);
       } else {
-        showToast('? Pedido no encontrado. Verifica el número (Ej: AP-1234)');
+        showToast('? Pedido no encontrado. Verifica el número (Ej: CS-1234)');
       }
     } catch (e) {
       if (btn) { btn.innerHTML = oldHtml; btn.disabled = false; }
@@ -1367,7 +1367,7 @@ async function lookupOrder() {
     }
   } else {
     // Búsqueda por correo/teléfono: ahora requiere inicio de sesión para el historial completo
-    showToast('?? Para buscar por correo/teléfono debes Iniciar Sesión, o usa tu número de pedido (Ej: AP-1234)', 'info');
+    showToast('?? Para buscar por correo/teléfono debes Iniciar Sesión, o usa tu número de pedido (Ej: CS-1234)', 'info');
   }
 }
 
