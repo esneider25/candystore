@@ -1,31 +1,31 @@
-﻿class WalkthroughTutorial {
+class WalkthroughTutorial {
   constructor() {
     this.currentStepIndex = 0;
     this.isActive = false;
     this.steps = [
       {
         id: 'step-catalog',
-        targetSelector: '.cat-pill:nth-child(2)',
+        targetSelector: '.mockup-cat-btn:nth-child(2)',
         text: '¡Hola! Te enseñaré a recargar paso a paso. 👇 Aquí tienes las categorías de nuestro catálogo.',
         handPos: 'bottom',
       },
       {
         id: 'step-game',
-        targetSelector: '.game-card', 
+        targetSelector: '.mockup-card', 
         text: 'Primero debes elegir el juego o servicio. Toca "Siguiente" para simular que elegimos este.',
         handPos: 'bottom',
         onNext: () => {
-          const firstCard = document.querySelector('.game-card');
+          const firstCard = document.querySelector('.mockup-card');
           if (firstCard) firstCard.click();
         }
       },
       {
         id: 'step-package',
-        targetSelector: '.package-card', 
+        targetSelector: '.mockup-package', 
         text: 'Luego, selecciona la cantidad de diamantes o saldo que quieras comprar.',
         handPos: 'top',
         onNext: () => {
-          const firstPkg = document.querySelector('.package-card');
+          const firstPkg = document.querySelector('.mockup-package');
           if (firstPkg) firstPkg.click();
         }
       },
@@ -41,20 +41,20 @@
       },
       {
         id: 'step-payment-methods',
-        targetSelector: '.payment-option',
+        targetSelector: '.mockup-payment-option',
         text: 'Elige cómo quieres pagar (Pago Móvil, Binance, etc). Aquí simulamos elegir Pago Móvil.',
         handPos: 'bottom',
         onShow: () => {
           setTimeout(() => {
-            const firstMethod = document.querySelector('.payment-option');
+            const firstMethod = document.querySelector('.mockup-payment-option');
             if (firstMethod) firstMethod.click();
           }, 300);
         }
       },
       {
         id: 'step-confirm',
-        targetSelector: '#btn-submit',
-        text: 'Por último, adjunta la captura de tu recibo y dale a "Confirmar Pedido". ¡Y listo!',
+        targetSelector: '#btn-buy-now',
+        text: 'Por último, dale a "COMPRAR AHORA" para continuar al pago. ¡Y listo!',
         handPos: 'top'
       }
     ];
@@ -316,9 +316,9 @@
       let attempts = 0;
       const check = () => {
         let el = null;
-        if (selector === '.game-card') el = document.querySelectorAll('.game-card')[0];
-        else if (selector === '.package-card') el = document.querySelectorAll('.package-card')[0];
-        else if (selector === '.payment-option') el = document.querySelectorAll('.payment-option')[0];
+        if (selector === '.mockup-card') el = document.querySelectorAll('.mockup-card')[0];
+        else if (selector === '.mockup-package') el = document.querySelectorAll('.mockup-package')[0];
+        else if (selector === '.mockup-payment-option') el = document.querySelectorAll('.mockup-payment-option')[0];
         else el = document.querySelector(selector);
         
         if (el && el.offsetHeight > 0) {
