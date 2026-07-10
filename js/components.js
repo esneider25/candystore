@@ -21,8 +21,6 @@ function renderNavbar() {
         <ul class="nav-links" id="nav-links">
           <li><a onclick="navigateTo('home')" class="active" data-section="home">Inicio</a></li>
           <li><a onclick="scrollToSection('catalog')" data-section="catalog">Catálogo</a></li>
-          <li><a onclick="scrollToSection('how-it-works')" data-section="how-it-works">¿Cómo Funciona?</a></li>
-          <li><a onclick="scrollToSection('features')" data-section="features">Ventajas</a></li>
           <li><a onclick="navigateTo('lookup')" data-section="lookup">🔍 Mis Pedidos</a></li>
           <li id="auth-nav-item" class="desktop-auth-item">
             ${(typeof currentUser !== 'undefined' && currentUser) 
@@ -65,29 +63,40 @@ function renderMockupDashboard() {
     if (uncategorizedProducts.length > 0) {
       categoriesWithProducts.push({ id: 'otros', name: 'Otros', icon: '✨', products: uncategorizedProducts });
     }
+    
+    if (!appState.mockupCategory && categoriesWithProducts.length > 0) {
+      appState.mockupCategory = categoriesWithProducts[0].id;
+    }
+    
+    const activeCategory = categoriesWithProducts.find(cat => cat.id === appState.mockupCategory) || categoriesWithProducts[0];
 
-    gameSelectorHtml = categoriesWithProducts.map(cat => `
-      <div class="category-section" style="margin-bottom: 32px;">
-        <h3 class="category-section-title" style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-          ${cat.icon || ''} ${cat.name}
-        </h3>
-        <div class="category-carousel-container" style="position: relative;">
-          <div class="category-carousel">
-            ${cat.products.map(p => `
-              <div class="mockup-card group" onclick="appState.mockupSelectedProduct = '${p.id}'; appState.selectedPackageIndex = null; renderApp(); setTimeout(() => document.getElementById('purchase-area')?.scrollIntoView({behavior: 'smooth'}), 100);">
-                <div class="mockup-card-img-container">
-                  ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : `<div class="mockup-card-emoji">${p.currencyIcon}</div>`}
-                </div>
-                <div class="mockup-card-body">
-                  <h3 class="mockup-card-title">${p.name}</h3>
-                  <p class="mockup-card-subtitle">${cat.name}</p>
-                </div>
+    let categoryTabsHtml = `
+      <div class="mockup-category-tabs" style="display: flex; gap: 12px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none;">
+        ${categoriesWithProducts.map(cat => `
+          <button onclick="appState.mockupCategory = '${cat.id}'; renderApp();" class="mockup-cat-btn" style="padding: 10px 20px; border-radius: 20px; border: 1px solid ${appState.mockupCategory === cat.id ? 'var(--accent)' : 'var(--border)'}; background: ${appState.mockupCategory === cat.id ? 'rgba(236,72,153,0.15)' : 'var(--bg-surface)'}; color: ${appState.mockupCategory === cat.id ? 'var(--accent)' : 'var(--text-primary)'}; font-weight: 700; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 8px; transition: all 0.3s; box-shadow: ${appState.mockupCategory === cat.id ? '0 0 15px rgba(236,72,153,0.3)' : 'none'};">
+            ${cat.icon || ''} ${cat.name}
+          </button>
+        `).join('')}
+      </div>
+    `;
+
+    gameSelectorHtml = categoryTabsHtml + `
+      <div class="category-carousel-container" style="position: relative;">
+        <div class="category-carousel">
+          ${activeCategory.products.map(p => `
+            <div class="mockup-card group" onclick="appState.mockupSelectedProduct = '${p.id}'; appState.selectedPackageIndex = null; renderApp(); setTimeout(() => document.getElementById('purchase-area')?.scrollIntoView({behavior: 'smooth'}), 100);">
+              <div class="mockup-card-img-container">
+                ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : `<div class="mockup-card-emoji">${p.currencyIcon}</div>`}
               </div>
-            `).join('')}
-          </div>
+              <div class="mockup-card-body">
+                <h3 class="mockup-card-title">${p.name}</h3>
+                <p class="mockup-card-subtitle">${activeCategory.name}</p>
+              </div>
+            </div>
+          `).join('')}
         </div>
       </div>
-    `).join('');
+    `;
   }
 
   // Packages & Inputs
