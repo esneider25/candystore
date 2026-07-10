@@ -1449,9 +1449,6 @@ function rectifyOrderId(orderId) {
       processWalletOrderAuto(order);
     }
   }
-
-  // Refresh view
-  setTimeout(() => navigateTo('tracking', orderId), 500);
 }
 
 // -- Toggle Password Visibility --
