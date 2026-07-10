@@ -20,6 +20,16 @@ class WalkthroughTutorial {
         }
       },
       {
+        id: 'step-uid',
+        targetSelector: '#game-uid, #account-email',
+        text: '¡Excelente! Ahora debes ingresar tus datos (como el ID o Correo) aquí.',
+        handPos: 'bottom',
+        onNext: () => {
+          const input = document.querySelector('#game-uid, #account-email');
+          if (input) input.value = "123456789"; // demo input
+        }
+      },
+      {
         id: 'step-package',
         targetSelector: '.mockup-package', 
         text: 'Luego, selecciona la cantidad de diamantes o saldo que quieras comprar.',
@@ -27,16 +37,6 @@ class WalkthroughTutorial {
         onNext: () => {
           const firstPkg = document.querySelector('.mockup-package');
           if (firstPkg) firstPkg.click();
-        }
-      },
-      {
-        id: 'step-uid',
-        targetSelector: '#game-uid',
-        text: '¡Excelente! Ahora debes ingresar tu ID de Jugador aquí. Escríbelo con cuidado.',
-        handPos: 'bottom',
-        onNext: () => {
-          const input = document.getElementById('game-uid');
-          if (input) input.value = "123456789"; // demo input
         }
       },
       {
@@ -285,6 +285,16 @@ class WalkthroughTutorial {
 
     this.waitForElement(step.targetSelector).then(target => {
       if (!this.isActive) return;
+      if (!target) {
+        console.warn('Tutorial: Saltando paso ' + step.id + ' porque no se encontro el elemento.');
+        this.currentStepIndex++;
+        if (this.currentStepIndex >= this.steps.length) {
+          this.end();
+        } else {
+          setTimeout(() => this.showStep(), 150);
+        }
+        return;
+      }
       this.currentTarget = target;
       
       this.tooltip.querySelector('#tutorial-text').innerText = step.text;
@@ -326,7 +336,10 @@ class WalkthroughTutorial {
         } else {
           attempts++;
           if (attempts < 20) setTimeout(check, 200);
-          else console.warn('Tutorial: Element not found ' + selector);
+          else {
+            console.warn('Tutorial: Element not found ' + selector);
+            resolve(null);
+          }
         }
       };
       check();
