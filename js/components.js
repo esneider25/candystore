@@ -51,8 +51,32 @@ function renderMockupDashboard() {
   
   // Game Selector by Categories
   let gameSelectorHtml = '';
-  if (products.length === 0) {
-    gameSelectorHtml = '<p style="color:white; text-align:center; padding: 40px;">No hay productos disponibles.</p>';
+  if (products.length === 0 || !window.DATA_LOADED) {
+    let skeletonTabsHtml = `
+      <div style="display: flex; gap: 12px; margin-bottom: 24px; overflow-x: hidden;">
+        <div class="skeleton-pulse" style="width: 100px; height: 40px; border-radius: 20px; background: rgba(255,255,255,0.05);"></div>
+        <div class="skeleton-pulse" style="width: 120px; height: 40px; border-radius: 20px; background: rgba(255,255,255,0.05);"></div>
+        <div class="skeleton-pulse" style="width: 90px; height: 40px; border-radius: 20px; background: rgba(255,255,255,0.05);"></div>
+      </div>
+    `;
+    let skeletonCardsHtml = `
+      <div style="display: flex; gap: 16px; overflow-x: hidden;">
+        ${[1, 2, 3, 4].map(() => `
+          <div class="mockup-card skeleton-pulse" style="flex: 0 0 240px; height: 210px; background: rgba(255,255,255,0.03); border-color: transparent;"></div>
+        `).join('')}
+      </div>
+    `;
+    gameSelectorHtml = skeletonTabsHtml + skeletonCardsHtml;
+    gameSelectorHtml += `
+      <style>
+        @keyframes pulse-skeleton {
+          0% { opacity: 0.5; }
+          50% { opacity: 1; }
+          100% { opacity: 0.5; }
+        }
+        .skeleton-pulse { animation: pulse-skeleton 1.5s infinite ease-in-out; }
+      </style>
+    `;
   } else {
     const categoriesWithProducts = CATEGORIES.map(cat => {
       const catProducts = products.filter(p => p.category === cat.id);

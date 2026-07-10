@@ -134,6 +134,61 @@
   --font-body: 'Quicksand', sans-serif;
 }
 
+/* ── Light Theme Variables ── */
+.light-theme {
+  --bg-deep:        #f0f4f8;
+  --bg-ocean:       #ffffff;
+  --bg-surface:     rgba(255, 255, 255, 0.9);
+  --bg-card:        rgba(255, 255, 255, 1);
+  --bg-card-hover:  rgba(240, 244, 248, 1);
+  --accent:         #e11d48;
+  --accent-light:   #f43f5e;
+  --accent-dim:     #be123c;
+  --accent-glow:    rgba(225, 29, 72, 0.3);
+  --coral:          #e11d48;
+  --coral-light:    #f43f5e;
+  --coral-glow:     rgba(225, 29, 72, 0.3);
+  --electric:       #0284c7;
+  --electric-glow:  rgba(2, 132, 199, 0.3);
+  --neon-pink:      #e11d48;
+  --neon-cyan:      #0284c7;
+  --text-primary:   #0f172a;
+  --text-secondary: #334155;
+  --text-muted:     #64748b;
+  --border:         rgba(0, 0, 0, 0.12);
+  --border-active:  rgba(225, 29, 72, 0.5);
+}
+
+.light-theme .mockup-card, 
+.light-theme .mockup-package, 
+.light-theme .mockup-payment-option, 
+.light-theme .mockup-purchase-area,
+.light-theme .mockup-category-tabs button,
+.light-theme .order-form {
+  background-color: var(--bg-card);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+.light-theme .mockup-card-title,
+.light-theme .mockup-package-amount,
+.light-theme .mockup-purchase-header h2,
+.light-theme .mockup-step-title,
+.light-theme .mockup-catalog-title,
+.light-theme .mockup-payment-name {
+  color: var(--text-primary) !important;
+}
+
+.light-theme .mockup-input {
+  background-color: #ffffff;
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.light-theme .bg-candy-world {
+  background-color: #f0f4f8;
+}
+
 /* ── Reset ── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; font-size: 16px; }

@@ -489,7 +489,14 @@ function openPaymentModal() {
 
   // Show it with a slight delay for transition
   requestAnimationFrame(() => {
-    document.getElementById('checkout-modal-overlay').classList.add('active');
+    const overlay = document.getElementById('checkout-modal-overlay');
+    overlay.classList.add('active');
+    
+    // Ensure modal is scrolled to the top when opened
+    const modalContent = overlay.querySelector('.checkout-modal');
+    if (modalContent) {
+      modalContent.scrollTop = 0;
+    }
   });
 }
 
