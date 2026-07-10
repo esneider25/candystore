@@ -40,21 +40,47 @@ class WalkthroughTutorial {
         }
       },
       {
-        id: 'step-payment-methods',
-        targetSelector: '.mockup-payment-option',
-        text: 'Elige cómo quieres pagar (Pago Móvil, Binance, etc). Aquí simulamos elegir Pago Móvil.',
-        handPos: 'bottom',
-        onShow: () => {
-          setTimeout(() => {
-            const firstMethod = document.querySelector('.mockup-payment-option');
-            if (firstMethod) firstMethod.click();
-          }, 300);
+        id: 'step-buy-now',
+        targetSelector: '#btn-buy-now',
+        text: '¡Perfecto! Ahora dale a "COMPRAR AHORA" para abrir la pestaña de pago.',
+        handPos: 'top',
+        onNext: () => {
+          const btn = document.getElementById('btn-buy-now');
+          if (btn) btn.click();
         }
       },
       {
-        id: 'step-confirm',
-        targetSelector: '#btn-buy-now',
-        text: 'Por último, dale a "COMPRAR AHORA" para continuar al pago. ¡Y listo!',
+        id: 'step-payment-methods',
+        targetSelector: '.checkout-payment-option',
+        text: 'En esta pestaña, selecciona el método de pago que prefieras. (Aquí simularemos elegir el primero).',
+        handPos: 'bottom',
+        onNext: () => {
+          const firstMethod = document.querySelector('.checkout-payment-option');
+          if (firstMethod) firstMethod.click();
+        }
+      },
+      {
+        id: 'step-payment-details',
+        targetSelector: '#customer-phone, #customer-email, #customer-contact',
+        text: 'Completa tus datos de contacto y la información del pago. (Llenaremos datos ficticios por ti).',
+        handPos: 'bottom',
+        onNext: () => {
+          const phone = document.getElementById('customer-phone');
+          const email = document.getElementById('customer-email');
+          if (phone) phone.value = "04141234567";
+          if (email) email.value = "prueba@candystore.com";
+        }
+      },
+      {
+        id: 'step-screenshot',
+        targetSelector: '.screenshot-upload',
+        text: 'Sube aquí la captura de tu comprobante de pago para que podamos verificarlo.',
+        handPos: 'bottom'
+      },
+      {
+        id: 'step-confirm-order',
+        targetSelector: '#btn-submit',
+        text: 'Y por último, dale a "Confirmar Pedido". ¡Y listo, tu recarga estará en camino!',
         handPos: 'top'
       }
     ];
@@ -329,6 +355,7 @@ class WalkthroughTutorial {
         if (selector === '.mockup-card') el = document.querySelectorAll('.mockup-card')[0];
         else if (selector === '.mockup-package') el = document.querySelectorAll('.mockup-package')[0];
         else if (selector === '.mockup-payment-option') el = document.querySelectorAll('.mockup-payment-option')[0];
+        else if (selector === '.checkout-payment-option') el = document.querySelectorAll('.checkout-payment-option')[0];
         else el = document.querySelector(selector);
         
         if (el && el.offsetHeight > 0) {
