@@ -51,19 +51,40 @@ function renderMockupDashboard() {
   
   const productType = selectedProduct ? (selectedProduct.type || 'game-id') : 'game-id';
   
-  // Game Selector Grid
+  // Game Selector by Categories
   let gameSelectorHtml = '';
   if (products.length === 0) {
-    gameSelectorHtml = '<p style="color:white; text-align:center; grid-column: 1 / -1; padding: 40px;">No hay productos disponibles.</p>';
+    gameSelectorHtml = '<p style="color:white; text-align:center; padding: 40px;">No hay productos disponibles.</p>';
   } else {
-    gameSelectorHtml = products.map(p => `
-      <div class="mockup-card group" onclick="appState.mockupSelectedProduct = '${p.id}'; appState.selectedPackageIndex = null; renderApp(); setTimeout(() => document.getElementById('purchase-area')?.scrollIntoView({behavior: 'smooth'}), 100);">
-        <div class="mockup-card-img-container">
-          ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : `<div class="mockup-card-emoji">${p.currencyIcon}</div>`}
-        </div>
-        <div class="mockup-card-body">
-          <h3 class="mockup-card-title">${p.name}</h3>
-          <p class="mockup-card-subtitle">${getCategoryById(p.category)?.name || 'Recargas'}</p>
+    const categoriesWithProducts = CATEGORIES.map(cat => {
+      const catProducts = products.filter(p => p.category === cat.id);
+      return { ...cat, products: catProducts };
+    }).filter(cat => cat.products.length > 0);
+
+    const uncategorizedProducts = products.filter(p => !CATEGORIES.find(c => c.id === p.category));
+    if (uncategorizedProducts.length > 0) {
+      categoriesWithProducts.push({ id: 'otros', name: 'Otros', icon: '✨', products: uncategorizedProducts });
+    }
+
+    gameSelectorHtml = categoriesWithProducts.map(cat => `
+      <div class="category-section" style="margin-bottom: 32px;">
+        <h3 class="category-section-title" style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+          ${cat.icon || ''} ${cat.name}
+        </h3>
+        <div class="category-carousel-container" style="position: relative;">
+          <div class="category-carousel">
+            ${cat.products.map(p => `
+              <div class="mockup-card group" onclick="appState.mockupSelectedProduct = '${p.id}'; appState.selectedPackageIndex = null; renderApp(); setTimeout(() => document.getElementById('purchase-area')?.scrollIntoView({behavior: 'smooth'}), 100);">
+                <div class="mockup-card-img-container">
+                  ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : `<div class="mockup-card-emoji">${p.currencyIcon}</div>`}
+                </div>
+                <div class="mockup-card-body">
+                  <h3 class="mockup-card-title">${p.name}</h3>
+                  <p class="mockup-card-subtitle">${cat.name}</p>
+                </div>
+              </div>
+            `).join('')}
+          </div>
         </div>
       </div>
     `).join('');
@@ -210,9 +231,9 @@ function renderMockupDashboard() {
       </section>
 
       <!-- Catálogo de Juegos -->
-      <section style="margin-bottom: 48px;">
-        <h2 class="mockup-catalog-title">Selecciona el juego para recargar</h2>
-        <div class="mockup-grid">
+      <section id="catalog" style="margin-bottom: 48px;">
+        <h2 class="mockup-catalog-title">Nuestro Catálogo</h2>
+        <div class="catalog-categories-container">
           ${gameSelectorHtml}
         </div>
       </section>
