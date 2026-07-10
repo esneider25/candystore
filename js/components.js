@@ -163,16 +163,10 @@ function renderMockupDashboard() {
       `;
     } else if (productType === 'game-id-zone') {
       inputsHtml = `
-        <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
-          <div style="display:flex; gap:10px; width:100%; align-items: stretch;">
-            <div class="mockup-input-group" style="flex:2;">
-              <input type="text" id="game-uid" placeholder="Player ID" class="mockup-input" autocomplete="off">
-            </div>
-            <div class="mockup-input-group" style="flex:1;">
-              <input type="text" id="game-zone" placeholder="Zone ID" class="mockup-input" autocomplete="off">
-            </div>
-          </div>
-          ${verifierHtml ? `<div style="width:100%; display:flex;">${verifierHtml}</div>` : ''}
+        <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
+          <input type="text" id="game-uid" placeholder="Player ID" class="mockup-input" autocomplete="off" style="width:100%;">
+          <input type="text" id="game-zone" placeholder="Zone ID" class="mockup-input" autocomplete="off" style="width:100%;">
+          ${verifierHtml ? `<div style="width:100%; display:flex;">${verifierHtml.replace('margin-left: 10px; padding:0 16px; min-width:110px;', 'margin-left: 0; padding: 12px 16px; width: 100%;')}</div>` : ''}
         </div>
         <div id="verify-result" style="width:100%; margin-top: 8px; font-weight: bold; font-size: 0.95rem; color: #00d2ff; text-align: left;"></div>
       `;
