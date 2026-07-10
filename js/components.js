@@ -5,15 +5,29 @@
 function renderNavbar() {
   return `
     <nav class="navbar-pill" id="navbar">
-      <div class="navbar-inner">
-        <div class="logo" onclick="navigateTo('home')">
+      <div class="navbar-inner">        <div class="logo" onclick="navigateTo('home')">
           <span class="logo-icon" style="font-size: 2.2rem; margin-right: 8px;">🍭</span>
           <span class="logo-text">CandyStore</span>
         </div>
         
+        <div class="mobile-auth-btn">
+          ${(typeof currentUser !== 'undefined' && currentUser) 
+            ? `<a onclick="navigateTo('dashboard')" class="nav-cta" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); cursor:pointer; font-size: 0.75rem; padding: 6px 10px !important;">Mi Perfil ($${Number((typeof userProfile !== 'undefined' && userProfile && userProfile.wallet) ? userProfile.wallet : 0).toFixed(2)})</a>`
+            : `<a onclick="showAuthModal()" class="nav-cta" style="background: linear-gradient(135deg, #4f46e5, #3b82f6); cursor:pointer; font-size: 0.75rem; padding: 6px 10px !important;">Iniciar Sesión</a>`
+          }
+        </div>
+
         <ul class="nav-links" id="nav-links">
           <li><a onclick="navigateTo('home')" class="active" data-section="home">Inicio</a></li>
           <li><a onclick="scrollToSection('catalog')" data-section="catalog">Catálogo</a></li>
+          <li><a onclick="navigateTo('lookup')" data-section="lookup">🔍 Mis Pedidos</a></li>
+          <li id="auth-nav-item" class="desktop-auth-item">
+            ${(typeof currentUser !== 'undefined' && currentUser) 
+              ? `<a onclick="navigateTo('dashboard')" class="nav-cta" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); cursor:pointer;">Mi Perfil ($${Number((typeof userProfile !== 'undefined' && userProfile && userProfile.wallet) ? userProfile.wallet : 0).toFixed(2)})</a>`
+              : `<a onclick="showAuthModal()" class="nav-cta" style="background: linear-gradient(135deg, #4f46e5, #3b82f6); cursor:pointer;">Iniciar Sesión</a>`
+            }
+          </li>
+          <li id="pwa-nav-item"><a id="pwa-install-app-btn" onclick="window.handleStoreInstallClick()" class="nav-cta" style="background: linear-gradient(135deg, #10b981, #059669); cursor:pointer; color: white;">📲 Instalar App</a></li>
           <li><a class="theme-toggle-btn" onclick="toggleTheme()" style="cursor:pointer; font-size: 1.2rem;" title="Cambiar Tema">🌓</a></li>
         </ul>
         <button class="mobile-toggle" onclick="toggleMobileMenu()" aria-label="Menu" style="background: var(--bg-surface); border: 1px solid var(--border); padding: 8px 12px; border-radius: 20px; color: var(--text-primary); font-family: var(--font-primary); font-weight: 600; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
