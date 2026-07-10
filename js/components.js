@@ -6,7 +6,7 @@ function renderNavbar() {
   return `
     <nav class="navbar-pill" id="navbar">
       <div class="navbar-inner">        <div class="logo" onclick="navigateTo('home')">
-          <span class="logo-icon" style="font-size: 2.2rem; margin-right: 8px;">🍭</span>
+          <span class="logo-icon">🍭</span>
           <span class="logo-text">CandyStore</span>
         </div>
         

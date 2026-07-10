@@ -269,12 +269,16 @@ body {
   display: flex; align-items: center; gap: 10px;
   text-decoration: none; cursor: pointer;
 }
-.logo-icon { font-size: 2rem; filter: drop-shadow(0 0 8px var(--accent-glow)); }
+.logo .logo-icon { font-size: 2.2rem; margin-right: 8px; filter: drop-shadow(0 0 8px var(--accent-glow)); }
 .logo-text {
   font-family: var(--font-display); font-weight: 800; font-size: 1.4rem;
   background: linear-gradient(135deg, var(--accent), var(--accent-light));
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; letter-spacing: -0.5px;
+}
+@media (max-width: 768px) {
+  .logo .logo-icon { font-size: 1.4rem; margin-right: 4px; }
+  .logo .logo-text { font-size: 1.05rem; }
 }
 .logo-text span {
   background: linear-gradient(135deg, var(--coral), var(--coral-light));
